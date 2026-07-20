@@ -1,0 +1,134 @@
+/* admin_style.css */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap');
+
+body {
+    font-family: 'Nunito', sans-serif;
+    background-color: #f8f9fc;
+    color: #5a5c69;
+}
+
+.wrapper {
+    display: flex;
+    width: 100%;
+    align-items: stretch;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    min-width: 250px;
+    max-width: 250px;
+    background: #4e73df;
+    background: linear-gradient(180deg, #4e73df 10%, #224abe 100%);
+    color: #fff;
+    transition: all 0.3s;
+    min-height: 100vh;
+}
+
+.sidebar.active {
+    margin-left: -250px;
+}
+
+.sidebar .sidebar-header {
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.sidebar .sidebar-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 800;
+    letter-spacing: 0.1rem;
+    text-transform: uppercase;
+}
+
+.sidebar ul.components {
+    padding: 20px 0;
+}
+
+.sidebar ul li a {
+    padding: 15px 20px;
+    font-size: 0.9rem;
+    display: block;
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+.sidebar ul li a i {
+    width: 25px;
+    text-align: center;
+    margin-right: 10px;
+}
+
+.sidebar ul li a:hover, .sidebar ul li.active > a {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.15);
+    border-left: 4px solid #fff;
+}
+
+.sidebar ul li a .badge {
+    font-size: 0.7rem;
+    margin-top: 3px;
+}
+
+/* Page Content Styles */
+#content {
+    width: 100%;
+    padding: 20px;
+    min-height: 100vh;
+    transition: all 0.3s;
+    overflow-y: auto;
+}
+
+/* Top Navbar */
+.top-navbar {
+    border-radius: 0.5rem;
+}
+
+.search-form .form-control:focus {
+    box-shadow: none;
+    border-color: #d1d3e2;
+}
+
+.text-gray-300 {
+    color: #dddfeb !important;
+}
+
+.text-gray-800 {
+    color: #5a5c69 !important;
+}
+
+/* Cards Hover Animation */
+.hover-lift {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.hover-lift:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Activity Timeline */
+.activity-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .sidebar {
+        margin-left: -250px;
+    }
+    .sidebar.active {
+        margin-left: 0;
+    }
+    #content {
+        width: 100%;
+    }
+}
