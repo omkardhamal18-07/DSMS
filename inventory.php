@@ -577,6 +577,6 @@ $master_json = json_encode($master_list);
             }
         }
     </script>
-    <script src="under_development.js"></script>
+    <script src="under_development.js?v=2"></script>
 </body>
 </html>

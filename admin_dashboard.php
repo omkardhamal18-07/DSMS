@@ -430,6 +430,6 @@ $monthly_requests = $conn->query("SELECT COUNT(*) as c FROM stationery_requests 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Custom JS -->
     <script src="admin_script.js"></script>
-    <script src="under_development.js"></script>
+    <script src="under_development.js?v=2"></script>
 </body>
 </html>
