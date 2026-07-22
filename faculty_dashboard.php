@@ -278,5 +278,6 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'FACULTY') {
             document.getElementById('sidebar').classList.toggle('active');
         });
     </script>
+    <script src="under_development.js"></script>
 </body>
 </html>

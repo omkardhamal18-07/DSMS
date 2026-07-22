@@ -138,7 +138,7 @@ $departments = $conn->query($dept_query);
                 <div class="card shadow-sm border-0 rounded-3 mb-4">
                     <div class="card-body">
                         <form method="GET" action="request_history.php" class="row g-3 align-items-end">
-                            <div class="col-md-2">
+                            <div class="col-md-1">
                                 <label class="form-label small text-muted">Request ID</label>
                                 <input type="text" name="search_id" class="form-control form-control-sm" placeholder="#REQ-100" value="<?php echo htmlspecialchars($_GET['search_id'] ?? ''); ?>">
                             </div>
@@ -168,7 +168,7 @@ $departments = $conn->query($dept_query);
                                     <?php endwhile; endif; ?>
                                 </select>
                             </div>
-                            <div class="col-md-1">
+                            <div class="col-md-2">
                                 <label class="form-label small text-muted">Date</label>
                                 <input type="date" name="date" class="form-control form-control-sm" value="<?php echo htmlspecialchars($_GET['date'] ?? ''); ?>">
                             </div>
@@ -265,5 +265,6 @@ $departments = $conn->query($dept_query);
             document.getElementById('content').classList.toggle('active');
         });
     </script>
+    <script src="under_development.js"></script>
 </body>
 </html>

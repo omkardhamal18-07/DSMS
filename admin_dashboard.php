@@ -74,16 +74,7 @@ $monthly_requests = $conn->query("SELECT COUNT(*) as c FROM stationery_requests 
                     <button type="button" id="sidebarCollapse" class="btn btn-primary shadow-sm">
                         <i class="fas fa-bars"></i>
                     </button>
-                    <form class="d-flex ms-3 search-form w-25 d-none d-sm-flex">
-                        <div class="input-group">
-                            <input class="form-control border-end-0 border" type="search" placeholder="Search for..." id="example-search-input">
-                            <span class="input-group-append">
-                                <button class="btn btn-outline-secondary bg-white border-start-0 border ms-n5" type="button">
-                                    <i class="fa fa-search text-primary"></i>
-                                </button>
-                            </span>
-                        </div>
-                    </form>
+
                     <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
                         <li class="nav-item">
                             <a class="nav-link position-relative text-gray-500" href="faculty_requests.php?status=PENDING"><i class="fas fa-bell fs-5"></i>
@@ -439,5 +430,6 @@ $monthly_requests = $conn->query("SELECT COUNT(*) as c FROM stationery_requests 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Custom JS -->
     <script src="admin_script.js"></script>
+    <script src="under_development.js"></script>
 </body>
 </html>
