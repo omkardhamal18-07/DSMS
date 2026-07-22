@@ -66,18 +66,7 @@ if ($result->num_rows > 0) {
             </div>
             <ul class="list-unstyled components">
                 <li><a href="admin_dashboard.php"><i class="fas fa-chart-line"></i> Dashboard</a></li>
-                <li class="active">
-                    <a href="#facultyRequestsSubmenu" data-bs-toggle="collapse" aria-expanded="true" class="dropdown-toggle">
-                        <i class="fas fa-code-pull-request"></i> Faculty Requests
-                    </a>
-                    <ul class="collapse list-unstyled show" id="facultyRequestsSubmenu">
-                        <li class="<?php echo $status_filter === 'ALL' ? 'active' : ''; ?>"><a href="faculty_requests.php?status=ALL"><i class="fas fa-list ms-3 me-2"></i> All Requests</a></li>
-                        <li class="<?php echo $status_filter === 'PENDING' ? 'active' : ''; ?>"><a href="faculty_requests.php?status=PENDING"><i class="fas fa-clock ms-3 me-2"></i> Pending Requests</a></li>
-                        <li class="<?php echo $status_filter === 'APPROVED' ? 'active' : ''; ?>"><a href="faculty_requests.php?status=APPROVED"><i class="fas fa-check-circle ms-3 me-2"></i> Approved Requests</a></li>
-                        <li class="<?php echo $status_filter === 'REJECTED' ? 'active' : ''; ?>"><a href="faculty_requests.php?status=REJECTED"><i class="fas fa-times-circle ms-3 me-2"></i> Rejected Requests</a></li>
-                        <li><a href="request_history.php"><i class="fas fa-history ms-3 me-2"></i> Request History</a></li>
-                    </ul>
-                </li>
+                <li class="active"><a href="faculty_requests.php"><i class="fas fa-code-pull-request"></i> Faculty Requests</a></li>
                 <li><a href="inventory.php"><i class="fas fa-warehouse"></i> Inventory</a></li>
                 <li><a href="#"><i class="fas fa-dolly"></i> Issue Stationery</a></li>
                 <li><a href="#"><i class="fas fa-tags"></i> Categories</a></li>
@@ -97,8 +86,9 @@ if ($result->num_rows > 0) {
                     <button type="button" id="sidebarCollapse" class="btn btn-primary shadow-sm">
                         <i class="fas fa-bars"></i>
                     </button>
-                    <div class="d-none d-sm-block ms-3">
-                        <h5 class="mb-0 text-gray-800">Faculty Requests Management</h5>
+                    <div class="d-none d-sm-flex ms-3 align-items-center">
+                        <h5 class="mb-0 text-gray-800 me-3">Faculty Requests Management</h5>
+                        <a href="request_history.php" class="btn btn-sm btn-outline-primary"><i class="fas fa-history me-1"></i> Request History</a>
                     </div>
                     <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
                         <li class="nav-item">
