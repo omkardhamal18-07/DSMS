@@ -15,11 +15,15 @@ $out_of_stock_alerts = $conn->query("SELECT COUNT(*) as c FROM stationery WHERE 
 $total_alerts = $low_stock_alerts + $out_of_stock_alerts;
 
 // Fetch Requests Stats
+$total_requests = $conn->query("SELECT COUNT(*) as c FROM stationery_requests")->fetch_assoc()['c'];
 $pending_requests = $conn->query("SELECT COUNT(*) as c FROM stationery_requests WHERE status = 'PENDING'")->fetch_assoc()['c'];
 $approved_requests = $conn->query("SELECT COUNT(*) as c FROM stationery_requests WHERE status = 'APPROVED'")->fetch_assoc()['c'];
 $rejected_requests = $conn->query("SELECT COUNT(*) as c FROM stationery_requests WHERE status = 'REJECTED'")->fetch_assoc()['c'];
 $today_requests = $conn->query("SELECT COUNT(*) as c FROM stationery_requests WHERE DATE(request_date) = CURDATE()")->fetch_assoc()['c'];
 $monthly_requests = $conn->query("SELECT COUNT(*) as c FROM stationery_requests WHERE MONTH(request_date) = MONTH(CURDATE()) AND YEAR(request_date) = YEAR(CURDATE())")->fetch_assoc()['c'];
+
+// Fetch Users Stats
+$total_faculty = $conn->query("SELECT COUNT(*) as c FROM users WHERE role = 'FACULTY'")->fetch_assoc()['c'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -102,15 +106,103 @@ $monthly_requests = $conn->query("SELECT COUNT(*) as c FROM stationery_requests 
 
                 <!-- Metrics Cards -->
                 <div class="row g-4 mb-4">
-                    <!-- Card 1 -->
+                    <!-- Card 1: Total Faculty -->
                     <div class="col-xl-3 col-md-6">
-                        <a href="inventory.php" class="text-decoration-none">
-                            <div class="card h-100 border-0 shadow-sm border-start border-primary border-4 rounded-3 hover-lift">
+                        <div class="card h-100 border-0 shadow-sm border-start border-primary border-4 rounded-3 hover-lift">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col me-2">
+                                        <div class="text-xs fw-bold text-primary text-uppercase mb-1">Total Faculty</div>
+                                        <div class="h5 mb-0 fw-bold text-gray-800"><?php echo number_format($total_faculty); ?></div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-users fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Card 2: Total Requests -->
+                    <div class="col-xl-3 col-md-6">
+                        <a href="faculty_requests.php?status=ALL" class="text-decoration-none">
+                            <div class="card h-100 border-0 shadow-sm border-start border-secondary border-4 rounded-3 hover-lift">
                                 <div class="card-body">
                                     <div class="row no-gutters align-items-center">
                                         <div class="col me-2">
-                                            <div class="text-xs fw-bold text-primary text-uppercase mb-1">Total Items</div>
-                                            <div class="h5 mb-0 fw-bold text-gray-800"><?php echo number_format($total_items); ?></div>
+                                            <div class="text-xs fw-bold text-secondary text-uppercase mb-1">Total Requests</div>
+                                            <div class="h5 mb-0 fw-bold text-gray-800"><?php echo number_format($total_requests); ?></div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-file-invoice fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <!-- Card 3: Pending Requests -->
+                    <div class="col-xl-3 col-md-6">
+                        <a href="faculty_requests.php?status=PENDING" class="text-decoration-none">
+                            <div class="card h-100 border-0 shadow-sm border-start border-warning border-4 rounded-3 hover-lift">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col me-2">
+                                            <div class="text-xs fw-bold text-warning text-uppercase mb-1">Pending Requests</div>
+                                            <div class="h5 mb-0 fw-bold text-gray-800"><?php echo number_format($pending_requests); ?></div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-clock fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <!-- Card 4: Approved Requests -->
+                    <div class="col-xl-3 col-md-6">
+                        <a href="faculty_requests.php?status=APPROVED" class="text-decoration-none">
+                            <div class="card h-100 border-0 shadow-sm border-start border-success border-4 rounded-3 hover-lift">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col me-2">
+                                            <div class="text-xs fw-bold text-success text-uppercase mb-1">Approved Requests</div>
+                                            <div class="h5 mb-0 fw-bold text-gray-800"><?php echo number_format($approved_requests); ?></div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-thumbs-up fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <!-- Card 5: Rejected Requests -->
+                    <div class="col-xl-3 col-md-6">
+                        <a href="faculty_requests.php?status=REJECTED" class="text-decoration-none">
+                            <div class="card h-100 border-0 shadow-sm border-start border-danger border-4 rounded-3 hover-lift">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col me-2">
+                                            <div class="text-xs fw-bold text-danger text-uppercase mb-1">Rejected Requests</div>
+                                            <div class="h5 mb-0 fw-bold text-gray-800"><?php echo number_format($rejected_requests); ?></div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-thumbs-down fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <!-- Card 6: Total Inventory (distinct items) -->
+                    <div class="col-xl-3 col-md-6">
+                        <a href="inventory.php" class="text-decoration-none">
+                            <div class="card h-100 border-0 shadow-sm border-start border-info border-4 rounded-3 hover-lift">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col me-2">
+                                            <div class="text-xs fw-bold text-info text-uppercase mb-1">Total Inventory</div>
+                                            <div class="h5 mb-0 fw-bold text-gray-800"><?php echo number_format($total_items); ?> Items</div>
                                         </div>
                                         <div class="col-auto">
                                             <i class="fas fa-boxes-stacked fa-2x text-gray-300"></i>
@@ -120,7 +212,7 @@ $monthly_requests = $conn->query("SELECT COUNT(*) as c FROM stationery_requests 
                             </div>
                         </a>
                     </div>
-                    <!-- Card 2 -->
+                    <!-- Card 7: Available Stock -->
                     <div class="col-xl-3 col-md-6">
                         <a href="inventory.php?filter=available" class="text-decoration-none">
                             <div class="card h-100 border-0 shadow-sm border-start border-success border-4 rounded-3 hover-lift">
@@ -128,7 +220,7 @@ $monthly_requests = $conn->query("SELECT COUNT(*) as c FROM stationery_requests 
                                     <div class="row no-gutters align-items-center">
                                         <div class="col me-2">
                                             <div class="text-xs fw-bold text-success text-uppercase mb-1">Available Stock</div>
-                                            <div class="h5 mb-0 fw-bold text-gray-800"><?php echo number_format($available_stock); ?></div>
+                                            <div class="h5 mb-0 fw-bold text-gray-800"><?php echo number_format($available_stock); ?> Units</div>
                                         </div>
                                         <div class="col-auto">
                                             <i class="fas fa-check-circle fa-2x text-gray-300"></i>
@@ -138,39 +230,7 @@ $monthly_requests = $conn->query("SELECT COUNT(*) as c FROM stationery_requests 
                             </div>
                         </a>
                     </div>
-                    <!-- Card 3 -->
-                    <div class="col-xl-3 col-md-6">
-                        <div class="card h-100 border-0 shadow-sm border-start border-warning border-4 rounded-3 hover-lift">
-                            <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col me-2">
-                                        <div class="text-xs fw-bold text-warning text-uppercase mb-1">Pending Requests</div>
-                                        <div class="h5 mb-0 fw-bold text-gray-800"><?php echo number_format($pending_requests); ?></div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <i class="fas fa-clock fa-2x text-gray-300"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Card 4 -->
-                    <div class="col-xl-3 col-md-6">
-                        <div class="card h-100 border-0 shadow-sm border-start border-info border-4 rounded-3 hover-lift">
-                            <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col me-2">
-                                        <div class="text-xs fw-bold text-info text-uppercase mb-1">Today's Requests</div>
-                                        <div class="h5 mb-0 fw-bold text-gray-800"><?php echo number_format($today_requests); ?></div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <i class="fas fa-calendar-day fa-2x text-gray-300"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Card 5 -->
+                    <!-- Card 8: Low Stock Alerts -->
                     <div class="col-xl-3 col-md-6">
                         <a href="inventory.php?filter=low_stock" class="text-decoration-none">
                             <div class="card h-100 border-0 shadow-sm border-start border-danger border-4 rounded-3 hover-lift">
@@ -187,54 +247,6 @@ $monthly_requests = $conn->query("SELECT COUNT(*) as c FROM stationery_requests 
                                 </div>
                             </div>
                         </a>
-                    </div>
-                    <!-- Card 6 -->
-                    <div class="col-xl-3 col-md-6">
-                        <div class="card h-100 border-0 shadow-sm border-start border-secondary border-4 rounded-3 hover-lift">
-                            <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col me-2">
-                                        <div class="text-xs fw-bold text-secondary text-uppercase mb-1">Monthly Requests</div>
-                                        <div class="h5 mb-0 fw-bold text-gray-800"><?php echo number_format($monthly_requests); ?></div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <i class="fas fa-chart-area fa-2x text-gray-300"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                     <!-- Card 7 -->
-                     <div class="col-xl-3 col-md-6">
-                        <div class="card h-100 border-0 shadow-sm border-start border-primary border-4 rounded-3 hover-lift">
-                            <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col me-2">
-                                        <div class="text-xs fw-bold text-primary text-uppercase mb-1">Approved Requests</div>
-                                        <div class="h5 mb-0 fw-bold text-gray-800"><?php echo number_format($approved_requests); ?></div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <i class="fas fa-thumbs-up fa-2x text-gray-300"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                     <!-- Card 8 -->
-                     <div class="col-xl-3 col-md-6">
-                        <div class="card h-100 border-0 shadow-sm border-start border-dark border-4 rounded-3 hover-lift">
-                            <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col me-2">
-                                        <div class="text-xs fw-bold text-dark text-uppercase mb-1">Rejected Requests</div>
-                                        <div class="h5 mb-0 fw-bold text-gray-800"><?php echo number_format($rejected_requests); ?></div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <i class="fas fa-thumbs-down fa-2x text-gray-300"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
 
