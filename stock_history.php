@@ -59,7 +59,7 @@ if ($stmt = $conn->prepare($history_query)) {
                 <li><a href="admin_dashboard.php"><i class="fas fa-chart-line"></i> Dashboard</a></li>
                 <li><a href="faculty_requests.php"><i class="fas fa-code-pull-request"></i> Faculty Requests</a></li>
                 <li class="active"><a href="inventory.php"><i class="fas fa-warehouse"></i> Inventory</a></li>
-                <li><a href="#"><i class="fas fa-dolly"></i> Issue Stationery</a></li>
+                <li><a href="issue_stationery.php"><i class="fas fa-dolly"></i> Issue Stationery</a></li>
                 <li><a href="#"><i class="fas fa-tags"></i> Categories</a></li>
                 <li><a href="#"><i class="fas fa-chart-pie"></i> Reports</a></li>
                 <li><a href="#"><i class="fas fa-bell"></i> Notifications <span class="badge bg-danger rounded-pill float-end">3</span></a></li>

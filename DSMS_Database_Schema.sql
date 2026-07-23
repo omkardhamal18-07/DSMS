@@ -49,7 +49,7 @@ CREATE TABLE stationery_requests (
     stationery_id INT NOT NULL,
     requested_quantity INT NOT NULL,
     request_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    status ENUM('PENDING','APPROVED','REJECTED') DEFAULT 'PENDING',
+    status ENUM('PENDING','APPROVED','REJECTED','COMPLETED') DEFAULT 'PENDING',
     remarks VARCHAR(255),
     reviewed_by INT NULL,
     review_date DATETIME NULL,
@@ -59,20 +59,28 @@ CREATE TABLE stationery_requests (
     CHECK(requested_quantity>0)
 );
 
-CREATE TABLE stationery_issues (
+CREATE TABLE issue_records (
     issue_id INT AUTO_INCREMENT PRIMARY KEY,
-    faculty_id INT NOT NULL,
-    stationery_id INT NOT NULL,
     request_id INT NULL,
-    issued_quantity INT NOT NULL,
-    issue_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    faculty_id INT NOT NULL,
+    issue_source ENUM('REQUEST','DIRECT') NOT NULL,
     issued_by INT NOT NULL,
-    issue_type ENUM('ONLINE_REQUEST','VERBAL_REQUEST') NOT NULL,
-    FOREIGN KEY (faculty_id) REFERENCES users(user_id),
-    FOREIGN KEY (stationery_id) REFERENCES stationery(stationery_id),
+    issue_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    remarks VARCHAR(255),
+    status ENUM('COMPLETED') DEFAULT 'COMPLETED',
     FOREIGN KEY (request_id) REFERENCES stationery_requests(request_id),
-    FOREIGN KEY (issued_by) REFERENCES users(user_id),
-    CHECK(issued_quantity>0)
+    FOREIGN KEY (faculty_id) REFERENCES users(user_id),
+    FOREIGN KEY (issued_by) REFERENCES users(user_id)
+);
+
+CREATE TABLE issue_items (
+    issue_item_id INT AUTO_INCREMENT PRIMARY KEY,
+    issue_id INT NOT NULL,
+    stationery_id INT NOT NULL,
+    issued_quantity INT NOT NULL,
+    FOREIGN KEY (issue_id) REFERENCES issue_records(issue_id) ON DELETE CASCADE,
+    FOREIGN KEY (stationery_id) REFERENCES stationery(stationery_id),
+    CHECK(issued_quantity > 0)
 );
 
 CREATE TABLE computer_systems (
@@ -119,7 +127,7 @@ CREATE INDEX idx_lab_name ON laboratories(laboratory_name);
 
 DELIMITER //
 CREATE TRIGGER trg_reduce_stock
-AFTER INSERT ON stationery_issues
+AFTER INSERT ON issue_items
 FOR EACH ROW
 BEGIN
     UPDATE stationery
