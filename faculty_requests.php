@@ -308,7 +308,19 @@ if ($result->num_rows > 0) {
                         <div class="col-sm-7 fw-bold text-primary" id="v_requested_qty"></div>
                     </div>
                     <div class="row mb-2">
-                        <div class="col-sm-5 fw-bold text-gray-700">Purpose/Remarks:</div>
+                        <div class="col-sm-5 fw-bold text-gray-700">Purpose:</div>
+                        <div class="col-sm-7" id="v_purpose"></div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-5 fw-bold text-gray-700">Priority:</div>
+                        <div class="col-sm-7" id="v_priority"></div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-5 fw-bold text-gray-700">Required Date:</div>
+                        <div class="col-sm-7" id="v_required_date"></div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-5 fw-bold text-danger">HOD Remarks:</div>
                         <div class="col-sm-7" id="v_remarks"></div>
                     </div>
                     <div class="row mb-2">
@@ -434,6 +446,9 @@ if ($result->num_rows > 0) {
                 }
 
                 document.getElementById('v_requested_qty').textContent = req.requested_quantity;
+                document.getElementById('v_purpose').textContent = req.purpose || 'None';
+                document.getElementById('v_priority').textContent = req.priority || 'MEDIUM';
+                document.getElementById('v_required_date').textContent = req.required_date || 'N/A';
                 document.getElementById('v_remarks').textContent = req.remarks || 'None';
                 document.getElementById('v_request_date').textContent = req.request_date;
                 
