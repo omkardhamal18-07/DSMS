@@ -17,9 +17,9 @@ $total_alerts = $low_stock_alerts + $out_of_stock_alerts;
 // Fetch Requests Stats
 $pending_requests = $conn->query("SELECT COUNT(*) as c FROM stationery_requests WHERE status = 'PENDING'")->fetch_assoc()['c'];
 $approved_requests = $conn->query("SELECT COUNT(*) as c FROM stationery_requests WHERE status = 'APPROVED'")->fetch_assoc()['c'];
-$rejected_requests = $conn->query("SELECT COUNT(*) as c FROM stationery_requests WHERE status = 'REJECTED'")->fetch_assoc()['c'];
-$today_requests = $conn->query("SELECT COUNT(*) as c FROM stationery_requests WHERE DATE(request_date) = CURDATE()")->fetch_assoc()['c'];
-$monthly_requests = $conn->query("SELECT COUNT(*) as c FROM stationery_requests WHERE MONTH(request_date) = MONTH(CURDATE()) AND YEAR(request_date) = YEAR(CURDATE())")->fetch_assoc()['c'];
+$completed_requests = $conn->query("SELECT COUNT(*) as c FROM stationery_requests WHERE status = 'COMPLETED'")->fetch_assoc()['c'];
+$today_issues = $conn->query("SELECT SUM(issued_quantity) as c FROM issue_items ii JOIN issue_records ir ON ii.issue_id = ir.issue_id WHERE DATE(ir.issue_date) = CURDATE()")->fetch_assoc()['c'] ?? 0;
+$monthly_issues = $conn->query("SELECT SUM(issued_quantity) as c FROM issue_items ii JOIN issue_records ir ON ii.issue_id = ir.issue_id WHERE MONTH(ir.issue_date) = MONTH(CURDATE()) AND YEAR(ir.issue_date) = YEAR(CURDATE())")->fetch_assoc()['c'] ?? 0;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -45,7 +45,7 @@ $monthly_requests = $conn->query("SELECT COUNT(*) as c FROM stationery_requests 
                 <li class="active"><a href="admin_dashboard.php"><i class="fas fa-chart-line"></i> Dashboard</a></li>
                 <li><a href="faculty_requests.php"><i class="fas fa-code-pull-request"></i> Faculty Requests</a></li>
                 <li><a href="inventory.php"><i class="fas fa-warehouse"></i> Inventory</a></li>
-                <li><a href="#"><i class="fas fa-dolly"></i> Issue Stationery</a></li>
+                <li><a href="issue_stationery.php"><i class="fas fa-dolly"></i> Issue Stationery</a></li>
                 <li><a href="#"><i class="fas fa-tags"></i> Categories</a></li>
                 <li><a href="#"><i class="fas fa-chart-pie"></i> Reports</a></li>
                 <li><a href="faculty_requests.php?status=PENDING"><i class="fas fa-bell"></i> Notifications <?php if($pending_requests > 0): ?><span class="badge bg-danger rounded-pill float-end"><?php echo $pending_requests; ?></span><?php endif; ?></a></li>
@@ -160,11 +160,11 @@ $monthly_requests = $conn->query("SELECT COUNT(*) as c FROM stationery_requests 
                             <div class="card-body">
                                 <div class="row no-gutters align-items-center">
                                     <div class="col me-2">
-                                        <div class="text-xs fw-bold text-info text-uppercase mb-1">Today's Requests</div>
-                                        <div class="h5 mb-0 fw-bold text-gray-800"><?php echo number_format($today_requests); ?></div>
+                                        <div class="text-xs fw-bold text-info text-uppercase mb-1">Today's Issued Items</div>
+                                        <div class="h5 mb-0 fw-bold text-gray-800"><?php echo number_format($today_issues); ?></div>
                                     </div>
                                     <div class="col-auto">
-                                        <i class="fas fa-calendar-day fa-2x text-gray-300"></i>
+                                        <i class="fas fa-box-open fa-2x text-gray-300"></i>
                                     </div>
                                 </div>
                             </div>
@@ -194,8 +194,8 @@ $monthly_requests = $conn->query("SELECT COUNT(*) as c FROM stationery_requests 
                             <div class="card-body">
                                 <div class="row no-gutters align-items-center">
                                     <div class="col me-2">
-                                        <div class="text-xs fw-bold text-secondary text-uppercase mb-1">Monthly Requests</div>
-                                        <div class="h5 mb-0 fw-bold text-gray-800"><?php echo number_format($monthly_requests); ?></div>
+                                        <div class="text-xs fw-bold text-secondary text-uppercase mb-1">Monthly Issued Items</div>
+                                        <div class="h5 mb-0 fw-bold text-gray-800"><?php echo number_format($monthly_issues); ?></div>
                                     </div>
                                     <div class="col-auto">
                                         <i class="fas fa-chart-area fa-2x text-gray-300"></i>
@@ -226,11 +226,11 @@ $monthly_requests = $conn->query("SELECT COUNT(*) as c FROM stationery_requests 
                             <div class="card-body">
                                 <div class="row no-gutters align-items-center">
                                     <div class="col me-2">
-                                        <div class="text-xs fw-bold text-dark text-uppercase mb-1">Rejected Requests</div>
-                                        <div class="h5 mb-0 fw-bold text-gray-800"><?php echo number_format($rejected_requests); ?></div>
+                                        <div class="text-xs fw-bold text-dark text-uppercase mb-1">Completed Requests</div>
+                                        <div class="h5 mb-0 fw-bold text-gray-800"><?php echo number_format($completed_requests); ?></div>
                                     </div>
                                     <div class="col-auto">
-                                        <i class="fas fa-thumbs-down fa-2x text-gray-300"></i>
+                                        <i class="fas fa-check-double fa-2x text-gray-300"></i>
                                     </div>
                                 </div>
                             </div>
@@ -383,6 +383,7 @@ $monthly_requests = $conn->query("SELECT COUNT(*) as c FROM stationery_requests 
                                                     if ($req['status'] === 'PENDING') $status_badge = '<span class="badge bg-warning text-dark px-2 py-1">Pending</span>';
                                                     elseif ($req['status'] === 'APPROVED') $status_badge = '<span class="badge bg-success px-2 py-1">Approved</span>';
                                                     elseif ($req['status'] === 'REJECTED') $status_badge = '<span class="badge bg-danger px-2 py-1">Rejected</span>';
+                                                    elseif ($req['status'] === 'COMPLETED') $status_badge = '<span class="badge bg-primary px-2 py-1">Completed</span>';
                                             ?>
                                             <tr>
                                                 <td class="fw-bold">#REQ-<?php echo $req['request_id']; ?></td>
