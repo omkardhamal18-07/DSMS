@@ -18,6 +18,9 @@ $total_alerts = $low_stock_alerts + $out_of_stock_alerts;
 $total_requests = $conn->query("SELECT COUNT(*) as c FROM stationery_requests")->fetch_assoc()['c'];
 $pending_requests = $conn->query("SELECT COUNT(*) as c FROM stationery_requests WHERE status = 'PENDING'")->fetch_assoc()['c'];
 $approved_requests = $conn->query("SELECT COUNT(*) as c FROM stationery_requests WHERE status = 'APPROVED'")->fetch_assoc()['c'];
+$completed_requests = $conn->query("SELECT COUNT(*) as c FROM stationery_requests WHERE status = 'COMPLETED'")->fetch_assoc()['c'];
+$today_issues = $conn->query("SELECT SUM(issued_quantity) as c FROM issue_items ii JOIN issue_records ir ON ii.issue_id = ir.issue_id WHERE DATE(ir.issue_date) = CURDATE()")->fetch_assoc()['c'] ?? 0;
+$monthly_issues = $conn->query("SELECT SUM(issued_quantity) as c FROM issue_items ii JOIN issue_records ir ON ii.issue_id = ir.issue_id WHERE MONTH(ir.issue_date) = MONTH(CURDATE()) AND YEAR(ir.issue_date) = YEAR(CURDATE())")->fetch_assoc()['c'] ?? 0;
 $rejected_requests = $conn->query("SELECT COUNT(*) as c FROM stationery_requests WHERE status = 'REJECTED'")->fetch_assoc()['c'];
 $today_requests = $conn->query("SELECT COUNT(*) as c FROM stationery_requests WHERE DATE(request_date) = CURDATE()")->fetch_assoc()['c'];
 $monthly_requests = $conn->query("SELECT COUNT(*) as c FROM stationery_requests WHERE MONTH(request_date) = MONTH(CURDATE()) AND YEAR(request_date) = YEAR(CURDATE())")->fetch_assoc()['c'];
@@ -49,7 +52,7 @@ $total_faculty = $conn->query("SELECT COUNT(*) as c FROM users WHERE role = 'FAC
                 <li class="active"><a href="admin_dashboard.php"><i class="fas fa-chart-line"></i> Dashboard</a></li>
                 <li><a href="faculty_requests.php"><i class="fas fa-code-pull-request"></i> Faculty Requests</a></li>
                 <li><a href="inventory.php"><i class="fas fa-warehouse"></i> Inventory</a></li>
-                <li><a href="#"><i class="fas fa-dolly"></i> Issue Stationery</a></li>
+                <li><a href="issue_stationery.php"><i class="fas fa-dolly"></i> Issue Stationery</a></li>
                 <li><a href="#"><i class="fas fa-tags"></i> Categories</a></li>
                 <li><a href="#"><i class="fas fa-chart-pie"></i> Reports</a></li>
                 <li><a href="#" data-bs-toggle="modal" data-bs-target="#notificationCenterModal"><i class="fas fa-bell"></i> Notifications <span id="sidebarNotificationBadge" class="badge bg-danger rounded-pill float-end d-none">0</span></a></li>
@@ -173,6 +176,31 @@ $total_faculty = $conn->query("SELECT COUNT(*) as c FROM users WHERE role = 'FAC
                     </div>
                     <!-- Card 4: Approved Requests -->
                     <div class="col-xl-3 col-md-6">
+                        <div class="card h-100 border-0 shadow-sm border-start border-warning border-4 rounded-3 hover-lift">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col me-2">
+                                        <div class="text-xs fw-bold text-warning text-uppercase mb-1">Pending Requests</div>
+                                        <div class="h5 mb-0 fw-bold text-gray-800"><?php echo number_format($pending_requests); ?></div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-clock fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Card 4 -->
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card h-100 border-0 shadow-sm border-start border-info border-4 rounded-3 hover-lift">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col me-2">
+                                        <div class="text-xs fw-bold text-info text-uppercase mb-1">Today's Issued Items</div>
+                                        <div class="h5 mb-0 fw-bold text-gray-800"><?php echo number_format($today_issues); ?></div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-box-open fa-2x text-gray-300"></i>
                         <a href="faculty_requests.php?status=APPROVED" class="text-decoration-none">
                             <div class="card h-100 border-0 shadow-sm border-start border-success border-4 rounded-3 hover-lift">
                                 <div class="card-body">
@@ -209,6 +237,15 @@ $total_faculty = $conn->query("SELECT COUNT(*) as c FROM users WHERE role = 'FAC
                     </div>
                     <!-- Card 6: Total Inventory (distinct items) -->
                     <div class="col-xl-3 col-md-6">
+                        <div class="card h-100 border-0 shadow-sm border-start border-secondary border-4 rounded-3 hover-lift">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col me-2">
+                                        <div class="text-xs fw-bold text-secondary text-uppercase mb-1">Monthly Issued Items</div>
+                                        <div class="h5 mb-0 fw-bold text-gray-800"><?php echo number_format($monthly_issues); ?></div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-chart-area fa-2x text-gray-300"></i>
                         <a href="inventory.php" class="text-decoration-none">
                             <div class="card h-100 border-0 shadow-sm border-start border-info border-4 rounded-3 hover-lift">
                                 <div class="card-body">
@@ -243,6 +280,17 @@ $total_faculty = $conn->query("SELECT COUNT(*) as c FROM users WHERE role = 'FAC
                             </div>
                         </a>
                     </div>
+                     <!-- Card 8 -->
+                     <div class="col-xl-3 col-md-6">
+                        <div class="card h-100 border-0 shadow-sm border-start border-dark border-4 rounded-3 hover-lift">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col me-2">
+                                        <div class="text-xs fw-bold text-dark text-uppercase mb-1">Completed Requests</div>
+                                        <div class="h5 mb-0 fw-bold text-gray-800"><?php echo number_format($completed_requests); ?></div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-check-double fa-2x text-gray-300"></i>
                     <!-- Card 8: Low Stock Alerts -->
                     <div class="col-xl-3 col-md-6">
                         <a href="inventory.php?filter=low_stock" class="text-decoration-none">
@@ -408,6 +456,7 @@ $total_faculty = $conn->query("SELECT COUNT(*) as c FROM users WHERE role = 'FAC
                                                     if ($req['status'] === 'PENDING') $status_badge = '<span class="badge bg-warning text-dark px-2 py-1">Pending</span>';
                                                     elseif ($req['status'] === 'APPROVED') $status_badge = '<span class="badge bg-success px-2 py-1">Approved</span>';
                                                     elseif ($req['status'] === 'REJECTED') $status_badge = '<span class="badge bg-danger px-2 py-1">Rejected</span>';
+                                                    elseif ($req['status'] === 'COMPLETED') $status_badge = '<span class="badge bg-primary px-2 py-1">Completed</span>';
                                             ?>
                                             <tr>
                                                 <td class="fw-bold">#REQ-<?php echo $req['request_id']; ?></td>
