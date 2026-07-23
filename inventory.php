@@ -118,20 +118,9 @@ $master_json = json_encode($master_list);
             </div>
             <ul class="list-unstyled components">
                 <li><a href="admin_dashboard.php"><i class="fas fa-chart-line"></i> Dashboard</a></li>
-                <li>
-                    <a href="#facultyRequestsSubmenu" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
-                        <i class="fas fa-code-pull-request"></i> Faculty Requests
-                    </a>
-                    <ul class="collapse list-unstyled" id="facultyRequestsSubmenu">
-                        <li><a href="faculty_requests.php?status=ALL"><i class="fas fa-list ms-3 me-2"></i> All Requests</a></li>
-                        <li><a href="faculty_requests.php?status=PENDING"><i class="fas fa-clock ms-3 me-2"></i> Pending Requests</a></li>
-                        <li><a href="faculty_requests.php?status=APPROVED"><i class="fas fa-check-circle ms-3 me-2"></i> Approved Requests</a></li>
-                        <li><a href="faculty_requests.php?status=REJECTED"><i class="fas fa-times-circle ms-3 me-2"></i> Rejected Requests</a></li>
-                        <li><a href="request_history.php"><i class="fas fa-history ms-3 me-2"></i> Request History</a></li>
-                    </ul>
-                </li>
+                <li><a href="faculty_requests.php"><i class="fas fa-code-pull-request"></i> Faculty Requests</a></li>
                 <li class="active"><a href="inventory.php"><i class="fas fa-warehouse"></i> Inventory</a></li>
-                <li><a href="#"><i class="fas fa-dolly"></i> Issue Stationery</a></li>
+                <li><a href="issue_stationery.php"><i class="fas fa-dolly"></i> Issue Stationery</a></li>
                 <li><a href="#"><i class="fas fa-tags"></i> Categories</a></li>
                 <li><a href="#"><i class="fas fa-chart-pie"></i> Reports</a></li>
                 <li><a href="#"><i class="fas fa-bell"></i> Notifications <span class="badge bg-danger rounded-pill float-end">3</span></a></li>

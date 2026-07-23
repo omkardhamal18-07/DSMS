@@ -17,6 +17,52 @@ $approved_requests = $conn->query("SELECT COUNT(*) as c FROM stationery_requests
 $rejected_requests = $conn->query("SELECT COUNT(*) as c FROM stationery_requests WHERE status = 'REJECTED'")->fetch_assoc()['c'];
 $today_requests = $conn->query("SELECT COUNT(*) as c FROM stationery_requests WHERE DATE(request_date) = CURDATE()")->fetch_assoc()['c'];
 
+// Chart Data Fetching
+$monthly_data_json = '[]';
+$cat_labels_json = '[]';
+$cat_data_json = '[]';
+$daily_labels_json = '[]';
+$daily_data_json = '[]';
+$has_chart_data = false;
+
+if ($status_filter === 'ALL') {
+    $monthly_data = array_fill(1, 12, 0);
+    $res = $conn->query("SELECT MONTH(request_date) as m, COUNT(*) as c FROM stationery_requests WHERE YEAR(request_date) = YEAR(CURDATE()) GROUP BY m");
+    if ($res) {
+        while($row = $res->fetch_assoc()){
+            $monthly_data[$row['m']] = (int)$row['c'];
+        }
+    }
+    $has_chart_data = array_sum($monthly_data) > 0;
+    $monthly_data_json = json_encode(array_values($monthly_data));
+} elseif ($status_filter === 'APPROVED') {
+    $cat_labels = [];
+    $cat_data = [];
+    $res = $conn->query("SELECT s.category, COUNT(*) as c FROM stationery_requests r JOIN stationery s ON r.stationery_id = s.stationery_id WHERE r.status = 'APPROVED' GROUP BY s.category");
+    if ($res) {
+        while($row = $res->fetch_assoc()){
+            $cat_labels[] = $row['category'];
+            $cat_data[] = (int)$row['c'];
+        }
+    }
+    $has_chart_data = count($cat_data) > 0;
+    $cat_labels_json = json_encode($cat_labels);
+    $cat_data_json = json_encode($cat_data);
+} elseif ($status_filter === 'REJECTED') {
+    $daily_labels = [];
+    $daily_data = [];
+    $res = $conn->query("SELECT DATE(request_date) as d, COUNT(*) as c FROM stationery_requests WHERE status = 'REJECTED' AND MONTH(request_date) = MONTH(CURDATE()) AND YEAR(request_date) = YEAR(CURDATE()) GROUP BY d ORDER BY d ASC");
+    if ($res) {
+        while($row = $res->fetch_assoc()){
+            $daily_labels[] = date('M d', strtotime($row['d']));
+            $daily_data[] = (int)$row['c'];
+        }
+    }
+    $has_chart_data = count($daily_data) > 0;
+    $daily_labels_json = json_encode($daily_labels);
+    $daily_data_json = json_encode($daily_data);
+}
+
 // Fetch requests for table
 $query = "SELECT r.*, u.name as faculty_name, u.department, s.item_name, s.category, s.quantity_available,
           rev.name as reviewer_name 
@@ -66,20 +112,9 @@ if ($result->num_rows > 0) {
             </div>
             <ul class="list-unstyled components">
                 <li><a href="admin_dashboard.php"><i class="fas fa-chart-line"></i> Dashboard</a></li>
-                <li class="active">
-                    <a href="#facultyRequestsSubmenu" data-bs-toggle="collapse" aria-expanded="true" class="dropdown-toggle">
-                        <i class="fas fa-code-pull-request"></i> Faculty Requests
-                    </a>
-                    <ul class="collapse list-unstyled show" id="facultyRequestsSubmenu">
-                        <li class="<?php echo $status_filter === 'ALL' ? 'active' : ''; ?>"><a href="faculty_requests.php?status=ALL"><i class="fas fa-list ms-3 me-2"></i> All Requests</a></li>
-                        <li class="<?php echo $status_filter === 'PENDING' ? 'active' : ''; ?>"><a href="faculty_requests.php?status=PENDING"><i class="fas fa-clock ms-3 me-2"></i> Pending Requests</a></li>
-                        <li class="<?php echo $status_filter === 'APPROVED' ? 'active' : ''; ?>"><a href="faculty_requests.php?status=APPROVED"><i class="fas fa-check-circle ms-3 me-2"></i> Approved Requests</a></li>
-                        <li class="<?php echo $status_filter === 'REJECTED' ? 'active' : ''; ?>"><a href="faculty_requests.php?status=REJECTED"><i class="fas fa-times-circle ms-3 me-2"></i> Rejected Requests</a></li>
-                        <li><a href="request_history.php"><i class="fas fa-history ms-3 me-2"></i> Request History</a></li>
-                    </ul>
-                </li>
+                <li class="active"><a href="faculty_requests.php"><i class="fas fa-code-pull-request"></i> Faculty Requests</a></li>
                 <li><a href="inventory.php"><i class="fas fa-warehouse"></i> Inventory</a></li>
-                <li><a href="#"><i class="fas fa-dolly"></i> Issue Stationery</a></li>
+                <li><a href="issue_stationery.php"><i class="fas fa-dolly"></i> Issue Stationery</a></li>
                 <li><a href="#"><i class="fas fa-tags"></i> Categories</a></li>
                 <li><a href="#"><i class="fas fa-chart-pie"></i> Reports</a></li>
                 <li><a href="faculty_requests.php?status=PENDING"><i class="fas fa-bell"></i> Notifications <?php if($pending_requests > 0): ?><span class="badge bg-danger rounded-pill float-end"><?php echo $pending_requests; ?></span><?php endif; ?></a></li>
@@ -97,8 +132,9 @@ if ($result->num_rows > 0) {
                     <button type="button" id="sidebarCollapse" class="btn btn-primary shadow-sm">
                         <i class="fas fa-bars"></i>
                     </button>
-                    <div class="d-none d-sm-block ms-3">
-                        <h5 class="mb-0 text-gray-800">Faculty Requests Management</h5>
+                    <div class="d-none d-sm-flex ms-3 align-items-center">
+                        <h5 class="mb-0 text-gray-800 me-3">Faculty Requests Management</h5>
+                        <a href="request_history.php" class="btn btn-sm btn-outline-primary"><i class="fas fa-history me-1"></i> Request History</a>
                     </div>
                     <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
                         <li class="nav-item">
@@ -202,6 +238,62 @@ if ($result->num_rows > 0) {
                     </div>
                 </div>
 
+                <!-- Chart Section -->
+                <?php if ($status_filter === 'ALL'): ?>
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card shadow-sm border-0 rounded-3 h-100">
+                            <div class="card-header bg-white border-0 py-3">
+                                <h6 class="m-0 fw-bold text-primary">Monthly Request Trends</h6>
+                            </div>
+                            <div class="card-body">
+                                <?php if ($has_chart_data): ?>
+                                <canvas id="monthlyTrendsChart" height="80"></canvas>
+                                <?php else: ?>
+                                <div class="text-center py-5 text-muted">No Data Available</div>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <?php elseif ($status_filter === 'APPROVED'): ?>
+                <div class="row mb-4">
+                    <div class="col-lg-8 mx-auto">
+                        <div class="card shadow-sm border-0 rounded-3 h-100">
+                            <div class="card-header bg-white border-0 py-3">
+                                <h6 class="m-0 fw-bold text-success">Approved Request Items by Category</h6>
+                            </div>
+                            <div class="card-body pb-2 d-flex justify-content-center">
+                                <?php if ($has_chart_data): ?>
+                                <div style="height: 300px; width: 100%;">
+                                    <canvas id="approvedCategoryChart"></canvas>
+                                </div>
+                                <?php else: ?>
+                                <div class="text-center py-5 text-muted w-100">No Data Available</div>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <?php elseif ($status_filter === 'REJECTED'): ?>
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card shadow-sm border-0 rounded-3 h-100">
+                            <div class="card-header bg-white border-0 py-3">
+                                <h6 class="m-0 fw-bold text-danger">Daily Rejected Requests (This Month)</h6>
+                            </div>
+                            <div class="card-body">
+                                <?php if ($has_chart_data): ?>
+                                <canvas id="dailyRejectedChart" height="80"></canvas>
+                                <?php else: ?>
+                                <div class="text-center py-5 text-muted">No Data Available</div>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <?php endif; ?>
+
                 <!-- Table Card -->
                 <div class="card shadow-sm border-0 rounded-3 mb-4">
                     <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center">
@@ -256,6 +348,7 @@ if ($result->num_rows > 0) {
                                             if ($req['status'] === 'PENDING') echo '<span class="badge bg-warning text-dark px-2 py-1">Pending</span>';
                                             elseif ($req['status'] === 'APPROVED') echo '<span class="badge bg-success px-2 py-1">Approved</span>';
                                             elseif ($req['status'] === 'REJECTED') echo '<span class="badge bg-danger px-2 py-1">Rejected</span>';
+                                            elseif ($req['status'] === 'COMPLETED') echo '<span class="badge bg-primary px-2 py-1">Completed</span>';
                                             ?>
                                         </td>
                                         <?php endif; ?>
@@ -466,6 +559,7 @@ if ($result->num_rows > 0) {
                 if (req.status === 'PENDING') statusEl.innerHTML = '<span class="badge bg-warning text-dark px-2 py-1">Pending</span>';
                 else if (req.status === 'APPROVED') statusEl.innerHTML = '<span class="badge bg-success px-2 py-1">Approved</span>';
                 else if (req.status === 'REJECTED') statusEl.innerHTML = '<span class="badge bg-danger px-2 py-1">Rejected</span>';
+                else if (req.status === 'COMPLETED') statusEl.innerHTML = '<span class="badge bg-primary px-2 py-1">Completed</span>';
 
                 if (req.status !== 'PENDING') {
                     document.getElementById('v_review_section').classList.remove('d-none');
@@ -518,6 +612,158 @@ if ($result->num_rows > 0) {
                 document.getElementById('rejectForm').reset();
                 new bootstrap.Modal(document.getElementById('rejectModal')).show();
             });
+        });
+    </script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const statusFilter = '<?php echo $status_filter; ?>';
+            
+            if (statusFilter === 'ALL') {
+                const ctxMonthly = document.getElementById('monthlyTrendsChart');
+                if (ctxMonthly) {
+                    new Chart(ctxMonthly, {
+                        type: 'line',
+                        data: {
+                            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                            datasets: [{
+                                label: 'Total Requests',
+                                data: <?php echo $monthly_data_json; ?>,
+                                borderColor: '#4e73df',
+                                backgroundColor: 'rgba(78, 115, 223, 0.1)',
+                                borderWidth: 3,
+                                pointBackgroundColor: '#4e73df',
+                                pointBorderColor: '#fff',
+                                pointHoverBackgroundColor: '#fff',
+                                pointHoverBorderColor: '#4e73df',
+                                pointRadius: 4,
+                                pointHoverRadius: 6,
+                                fill: true,
+                                tension: 0.4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    backgroundColor: '#fff',
+                                    titleColor: '#858796',
+                                    bodyColor: '#858796',
+                                    borderColor: '#dddfeb',
+                                    borderWidth: 1,
+                                    padding: 10,
+                                    displayColors: false,
+                                    callbacks: {
+                                        label: function(context) {
+                                            return context.parsed.y + ' requests';
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                x: { grid: { display: false, drawBorder: false } },
+                                y: {
+                                    ticks: { beginAtZero: true, stepSize: 1 },
+                                    grid: { color: 'rgb(234, 236, 244)', zeroLineColor: 'rgb(234, 236, 244)', drawBorder: false, borderDash: [2], zeroLineBorderDash: [2] }
+                                }
+                            }
+                        }
+                    });
+                }
+            } else if (statusFilter === 'APPROVED') {
+                const ctxCategory = document.getElementById('approvedCategoryChart');
+                if (ctxCategory) {
+                    const data = <?php echo $cat_data_json; ?>;
+                    const labels = <?php echo $cat_labels_json; ?>;
+                    new Chart(ctxCategory, {
+                        type: 'pie',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                data: data,
+                                backgroundColor: ['#1cc88a', '#4e73df', '#36b9cc', '#f6c23e', '#e74a3b', '#858796', '#5a5c69'],
+                                hoverBackgroundColor: ['#17a673', '#2e59d9', '#2c9faf', '#dda20a', '#be2617', '#60616f', '#373840'],
+                                hoverBorderColor: "rgba(234, 236, 244, 1)",
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { position: 'bottom' },
+                                tooltip: {
+                                    backgroundColor: '#fff',
+                                    titleColor: '#858796',
+                                    bodyColor: '#858796',
+                                    borderColor: '#dddfeb',
+                                    borderWidth: 1,
+                                    padding: 10,
+                                    callbacks: {
+                                        label: function(context) {
+                                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                            const value = context.parsed;
+                                            const percentage = Math.round((value / total) * 100);
+                                            return context.label + ': ' + value + ' (' + percentage + '%)';
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            } else if (statusFilter === 'REJECTED') {
+                const ctxDaily = document.getElementById('dailyRejectedChart');
+                if (ctxDaily) {
+                    const data = <?php echo $daily_data_json; ?>;
+                    const labels = <?php echo $daily_labels_json; ?>;
+                    new Chart(ctxDaily, {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Rejected Requests',
+                                data: data,
+                                backgroundColor: '#e74a3b',
+                                hoverBackgroundColor: '#e74a3b',
+                                borderColor: '#e74a3b',
+                                maxBarThickness: 25,
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    backgroundColor: '#fff',
+                                    titleColor: '#858796',
+                                    bodyColor: '#858796',
+                                    borderColor: '#dddfeb',
+                                    borderWidth: 1,
+                                    padding: 10,
+                                    displayColors: false,
+                                    callbacks: {
+                                        label: function(context) {
+                                            return context.parsed.y + ' rejected';
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                x: { grid: { display: false, drawBorder: false } },
+                                y: {
+                                    ticks: { beginAtZero: true, stepSize: 1 },
+                                    grid: { color: 'rgb(234, 236, 244)', zeroLineColor: 'rgb(234, 236, 244)', drawBorder: false, borderDash: [2], zeroLineBorderDash: [2] }
+                                }
+                            }
+                        }
+                    });
+                }
+            }
         });
     </script>
     <script src="under_development.js"></script>

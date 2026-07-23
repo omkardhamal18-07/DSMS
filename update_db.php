@@ -94,5 +94,47 @@ if ($check_user_col->num_rows == 0) {
     $conn->query("UPDATE users SET department = 'Computer Science' WHERE role = 'FACULTY'");
 }
 
+// 6. Migrate to new issue module structure
+$conn->query("SET FOREIGN_KEY_CHECKS=0");
+$conn->query("ALTER TABLE stationery_requests MODIFY COLUMN status ENUM('PENDING','APPROVED','REJECTED','COMPLETED') DEFAULT 'PENDING'");
+$conn->query("DROP TABLE IF EXISTS stationery_issues");
+$conn->query("CREATE TABLE IF NOT EXISTS issue_records (
+    issue_id INT AUTO_INCREMENT PRIMARY KEY,
+    request_id INT NULL,
+    faculty_id INT NOT NULL,
+    issue_source ENUM('REQUEST','DIRECT') NOT NULL,
+    issued_by INT NOT NULL,
+    issue_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    remarks VARCHAR(255),
+    status ENUM('COMPLETED') DEFAULT 'COMPLETED',
+    FOREIGN KEY (request_id) REFERENCES stationery_requests(request_id),
+    FOREIGN KEY (faculty_id) REFERENCES users(user_id),
+    FOREIGN KEY (issued_by) REFERENCES users(user_id)
+)");
+$conn->query("CREATE TABLE IF NOT EXISTS issue_items (
+    issue_item_id INT AUTO_INCREMENT PRIMARY KEY,
+    issue_id INT NOT NULL,
+    stationery_id INT NOT NULL,
+    issued_quantity INT NOT NULL,
+    FOREIGN KEY (issue_id) REFERENCES issue_records(issue_id) ON DELETE CASCADE,
+    FOREIGN KEY (stationery_id) REFERENCES stationery(stationery_id),
+    CHECK(issued_quantity > 0)
+)");
+$conn->query("DROP TRIGGER IF EXISTS trg_reduce_stock");
+$conn->query("
+CREATE TRIGGER trg_reduce_stock
+AFTER INSERT ON issue_items
+FOR EACH ROW
+BEGIN
+    UPDATE stationery
+    SET quantity_available = quantity_available - NEW.issued_quantity
+    WHERE stationery_id = NEW.stationery_id;
+END
+");
+$conn->query("SET FOREIGN_KEY_CHECKS=1");
+// 6. Create notifications table
+include_once("notification_helper.php");
+ensure_notifications_table($conn);
+
 echo "Database updated successfully.\n";
 ?>
