@@ -132,6 +132,9 @@ BEGIN
 END
 ");
 $conn->query("SET FOREIGN_KEY_CHECKS=1");
+// 6. Create notifications table
+include_once("notification_helper.php");
+ensure_notifications_table($conn);
 
 echo "Database updated successfully.\n";
 ?>

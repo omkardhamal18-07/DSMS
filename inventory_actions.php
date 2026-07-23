@@ -1,6 +1,7 @@
 <?php
 session_start();
 include("database/db.php");
+include_once("notification_helper.php");
 
 header('Content-Type: application/json');
 
@@ -48,6 +49,9 @@ if ($action === 'add_item') {
         $log_stmt = $conn->prepare("INSERT INTO stock_history (stationery_id, previous_quantity, new_quantity, admin_id, action) VALUES (?, 0, ?, ?, 'Initial Stock Added')");
         $log_stmt->bind_param("iii", $new_id, $quantity, $admin_id);
         $log_stmt->execute();
+
+        // Check low stock
+        check_and_create_low_stock_notification($conn, $new_id);
         
         echo json_encode(['success' => true, 'message' => 'Item added successfully.']);
     } else {
@@ -78,6 +82,8 @@ if ($action === 'edit_item') {
     $stmt->bind_param("ssissi", $name, $category, $min_stock, $unit, $desc, $id);
     
     if ($stmt->execute()) {
+        check_and_create_low_stock_notification($conn, $id);
+        resolve_low_stock_notification($conn, $id);
         echo json_encode(['success' => true, 'message' => 'Item updated successfully.']);
     } else {
         echo json_encode(['success' => false, 'message' => 'Database error.']);
@@ -90,6 +96,7 @@ if ($action === 'update_stock') {
     $operation = $_POST['operation'] ?? ''; // 'increase' or 'reduce'
     $amount = intval($_POST['amount'] ?? 0);
     $admin_id = $_SESSION['user_id'];
+    $admin_name = $_SESSION['name'] ?? 'System Admin';
 
     if ($id <= 0 || $amount <= 0 || !in_array($operation, ['increase', 'reduce'])) {
         echo json_encode(['success' => false, 'message' => 'Invalid stock update parameters.']);
@@ -97,7 +104,7 @@ if ($action === 'update_stock') {
     }
 
     // Get current quantity
-    $stmt = $conn->prepare("SELECT quantity_available, item_name FROM stationery WHERE stationery_id = ?");
+    $stmt = $conn->prepare("SELECT quantity_available, minimum_stock, item_name FROM stationery WHERE stationery_id = ?");
     $stmt->bind_param("i", $id);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -123,6 +130,41 @@ if ($action === 'update_stock') {
         $log_stmt = $conn->prepare("INSERT INTO stock_history (stationery_id, previous_quantity, new_quantity, admin_id, action) VALUES (?, ?, ?, ?, ?)");
         $log_stmt->bind_param("iiiis", $id, $current_qty, $new_qty, $admin_id, $action_desc);
         $log_stmt->execute();
+
+        // 1. Stock Updated Notification for Admin
+        $title_admin = "Stock Updated: " . $item['item_name'];
+        $msg_admin = "Item Name: " . $item['item_name'] . "\n" .
+                     "Previous Quantity: " . $current_qty . "\n" .
+                     "Updated Quantity: " . $new_qty . "\n" .
+                     "Updated By: Admin (" . $admin_name . ")\n" .
+                     "Date & Time: " . date("Y-m-d H:i:s");
+        create_notification($conn, $admin_id, null, 'ADMIN', 'STOCK_UPDATED', $title_admin, $msg_admin, $id);
+
+        // 2. Stock Replenished Notification for Faculty
+        if ($operation === 'increase') {
+            $msg_faculty = "The stock for '" . $item['item_name'] . "' has been updated and is now available.";
+            
+            // Find all faculty members who requested this item or send role-wide
+            $fac_req_stmt = $conn->prepare("SELECT DISTINCT faculty_id FROM stationery_requests WHERE stationery_id = ?");
+            $fac_req_stmt->bind_param("i", $id);
+            $fac_req_stmt->execute();
+            $fac_res = $fac_req_stmt->get_result();
+
+            if ($fac_res->num_rows > 0) {
+                while ($f_row = $fac_res->fetch_assoc()) {
+                    create_notification($conn, $admin_id, $f_row['faculty_id'], 'FACULTY', 'STOCK_UPDATED', "Stock Replenished: " . $item['item_name'], $msg_faculty, $id);
+                }
+            } else {
+                // Send general faculty role notification
+                create_notification($conn, $admin_id, null, 'FACULTY', 'STOCK_UPDATED', "Stock Replenished: " . $item['item_name'], $msg_faculty, $id);
+            }
+
+            // Resolve Low Stock Alert if new quantity > minimum stock
+            resolve_low_stock_notification($conn, $id);
+        } else {
+            // Check if reduced stock triggered low stock alert
+            check_and_create_low_stock_notification($conn, $id);
+        }
 
         echo json_encode(['success' => true, 'message' => 'Stock updated successfully.']);
     } else {
