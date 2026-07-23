@@ -51,55 +51,12 @@ if ($n_stmt = $conn->prepare($notif_query)) {
 <body>
     <div class="wrapper">
         <!-- Sidebar -->
-        <nav id="sidebar" class="sidebar shadow">
-            <div class="sidebar-header">
-                <h3><i class="fas fa-chalkboard-user me-2"></i> Faculty Portal</h3>
-            </div>
-            <div class="text-center mt-4 mb-3 d-none d-md-block">
-                <img src="faculty.png" alt="Faculty" class="rounded-circle bg-white p-1" style="width: 80px; height: 80px; object-fit: cover;">
-            </div>
-            <ul class="list-unstyled components mt-0">
-                <li><a href="faculty_dashboard.php"><i class="fas fa-chart-line"></i> Dashboard</a></li>
-                <li class="active"><a href="new_request.php"><i class="fas fa-plus-circle"></i> New Request</a></li>
-                <li><a href="my_requests.php"><i class="fas fa-clock-rotate-left"></i> Request History</a></li>
-                <li><a href="my_requests.php"><i class="fas fa-bell"></i> Notifications <?php if($notif_count > 0): ?><span class="badge bg-danger rounded-pill float-end"><?php echo $notif_count; ?></span><?php endif; ?></a></li>
-                <li><a href="logout.php" class="text-danger"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
-            </ul>
-        </nav>
+        <?php include 'includes/sidebar.php'; ?>
 
         <!-- Page Content -->
         <div id="content">
             <!-- Top Navbar -->
-            <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4 rounded-3 top-navbar">
-                <div class="container-fluid">
-                    <button type="button" id="sidebarCollapse" class="btn btn-primary shadow-sm">
-                        <i class="fas fa-bars"></i>
-                    </button>
-                    
-                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
-                        <li class="nav-item me-3">
-                            <a class="nav-link position-relative text-gray-500" href="my_requests.php">
-                                <i class="fas fa-bell fs-5"></i>
-                                <?php if($notif_count > 0): ?>
-                                <span class="position-absolute top-25 start-75 translate-middle p-1 bg-danger border border-light rounded-circle"></span>
-                                <?php endif; ?>
-                            </a>
-                        </li>
-                        <div class="topbar-divider d-none d-sm-block border-start mx-3" style="height: 2rem;"></div>
-                        <li class="nav-item">
-                            <div class="dropdown">
-                                <a class="nav-link dropdown-toggle d-flex align-items-center text-gray-800" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <span class="me-2 d-none d-lg-inline text-gray-600 small"><?php echo htmlspecialchars($faculty['name']); ?></span>
-                                    <img src="faculty.png" alt="User Profile" class="rounded-circle shadow-sm bg-light border p-1" width="32" height="32" style="object-fit: cover;">
-                                </a>
-                                <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="userDropdown">
-                                    <li><a class="dropdown-item text-danger" href="logout.php"><i class="fas fa-sign-out-alt fa-sm fa-fw me-2 text-gray-400"></i> Logout</a></li>
-                                </ul>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
+            <?php include 'includes/navbar.php'; ?>
 
             <!-- Main Content Area -->
             <div class="container-fluid px-0">

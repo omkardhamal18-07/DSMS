@@ -98,79 +98,12 @@ $notif_count = count($notifications);
 <body data-role="FACULTY">
     <div class="wrapper">
         <!-- Sidebar -->
-        <nav id="sidebar" class="sidebar shadow">
-            <div class="sidebar-header">
-                <h3><i class="fas fa-chalkboard-user me-2"></i> Faculty Portal</h3>
-            </div>
-            <div class="text-center mt-4 mb-3 d-none d-md-block">
-                <img src="faculty.png" alt="Faculty" class="rounded-circle bg-white p-1" style="width: 80px; height: 80px; object-fit: cover;">
-            </div>
-            <ul class="list-unstyled components mt-0">
-                <li class="active"><a href="faculty_dashboard.php"><i class="fas fa-chart-line"></i> Dashboard</a></li>
-                <li><a href="#" data-bs-toggle="modal" data-bs-target="#newRequestModal"><i class="fas fa-plus-circle"></i> New Request</a></li>
-                <li><a href="#" data-bs-toggle="modal" data-bs-target="#notificationCenterModal"><i class="fas fa-bell"></i> Notifications <span id="sidebarNotificationBadge" class="badge bg-danger rounded-pill float-end d-none">0</span></a></li>
-                <li><a href="#"><i class="fas fa-user"></i> Profile</a></li>
-                <li><a href="new_request.php"><i class="fas fa-plus-circle"></i> New Request</a></li>
-                <li><a href="my_requests.php"><i class="fas fa-clock-rotate-left"></i> Request History</a></li>
-                <li><a href="my_requests.php"><i class="fas fa-bell"></i> Notifications <?php if($notif_count > 0): ?><span class="badge bg-danger rounded-pill float-end"><?php echo $notif_count; ?></span><?php endif; ?></a></li>
-                <li><a href="logout.php" class="text-danger"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
-            </ul>
-        </nav>
+        <?php include 'includes/sidebar.php'; ?>
 
         <!-- Page Content -->
         <div id="content">
             <!-- Top Navbar -->
-            <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4 rounded-3 top-navbar">
-                <div class="container-fluid">
-                    <button type="button" id="sidebarCollapse" class="btn btn-primary shadow-sm">
-                        <i class="fas fa-bars"></i>
-                    </button>
-                    
-                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
-                        <li class="nav-item dropdown me-3">
-                            <a class="nav-link position-relative text-gray-500 dropdown-toggle text-decoration-none" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-bell fs-5"></i>
-                                <span id="navNotificationBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none" style="font-size: 0.65rem;">
-                                    0
-                                </span>
-                        <li class="nav-item me-3">
-                            <a class="nav-link position-relative text-gray-500" href="my_requests.php">
-                                <i class="fas fa-bell fs-5"></i>
-                                <?php if($notif_count > 0): ?>
-                                <span class="position-absolute top-25 start-75 translate-middle p-1 bg-danger border border-light rounded-circle"></span>
-                                <?php endif; ?>
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-end dropdown-menu-notifications shadow border-0 animated--grow-in" aria-labelledby="notificationDropdown">
-                                <div class="dropdown-header bg-primary text-white d-flex justify-content-between align-items-center py-2 px-3">
-                                    <span class="fw-bold"><i class="fas fa-bell me-1"></i> Notifications</span>
-                                    <div>
-                                        <button class="btn btn-sm btn-link text-white p-0 text-decoration-none" id="markAllReadDropdownBtn" style="font-size: 0.75rem;">Mark All Read</button>
-                                    </div>
-                                </div>
-                                <div id="notificationDropdownList" class="notification-list-container">
-                                    <div class="text-center py-4"><div class="spinner-border spinner-border-sm text-primary"></div></div>
-                                </div>
-                                <div class="dropdown-footer bg-light text-center py-2 border-top">
-                                    <button class="btn btn-sm text-primary fw-bold p-0 border-0 bg-transparent" data-bs-toggle="modal" data-bs-target="#notificationCenterModal">View All Notifications Center</button>
-                                </div>
-                            </div>
-                        </li>
-                        <div class="topbar-divider d-none d-sm-block border-start mx-3" style="height: 2rem;"></div>
-                        <li class="nav-item">
-                            <div class="dropdown">
-                                <a class="nav-link dropdown-toggle d-flex align-items-center text-gray-800" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <span class="me-2 d-none d-lg-inline text-gray-600 small"><?php echo htmlspecialchars($_SESSION['name'] ?? 'Faculty Member'); ?></span>
-                                    <span class="me-2 d-none d-lg-inline text-gray-600 small"><?php echo htmlspecialchars($faculty['name']); ?></span>
-                                    <img src="faculty.png" alt="User Profile" class="rounded-circle shadow-sm bg-light border p-1" width="32" height="32" style="object-fit: cover;">
-                                </a>
-                                <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="userDropdown">
-                                    <li><a class="dropdown-item text-danger" href="logout.php"><i class="fas fa-sign-out-alt fa-sm fa-fw me-2 text-gray-400"></i> Logout</a></li>
-                                </ul>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
+            <?php include 'includes/navbar.php'; ?>
 
             <!-- Dashboard Content -->
             <div class="container-fluid px-0">
@@ -183,15 +116,6 @@ $notif_count = count($notifications);
                 <div class="row g-4 mb-4">
                     <!-- Total Requests -->
                     <div class="col-xl-3 col-md-6">
-                        <div class="card h-100 border-0 shadow-sm border-start border-primary border-4 rounded-3 hover-lift">
-                            <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col me-2">
-                                        <div class="text-xs fw-bold text-primary text-uppercase mb-1">Total Requests</div>
-                                        <div class="h5 mb-0 fw-bold text-gray-800"><?php echo $total_req_fac; ?></div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <i class="fas fa-file-alt fa-2x text-gray-300"></i>
                         <a href="my_requests.php?status=ALL" class="text-decoration-none">
                             <div class="card h-100 border-0 shadow-sm border-start border-primary border-4 rounded-3 hover-lift">
                                 <div class="card-body">
@@ -210,15 +134,6 @@ $notif_count = count($notifications);
                     </div>
                     <!-- Pending -->
                     <div class="col-xl-3 col-md-6">
-                        <div class="card h-100 border-0 shadow-sm border-start border-warning border-4 rounded-3 hover-lift">
-                            <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col me-2">
-                                        <div class="text-xs fw-bold text-warning text-uppercase mb-1">Pending</div>
-                                        <div class="h5 mb-0 fw-bold text-gray-800"><?php echo $pending_req_fac; ?></div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <i class="fas fa-clock fa-2x text-gray-300"></i>
                         <a href="my_requests.php?status=PENDING" class="text-decoration-none">
                             <div class="card h-100 border-0 shadow-sm border-start border-warning border-4 rounded-3 hover-lift">
                                 <div class="card-body">
@@ -237,15 +152,6 @@ $notif_count = count($notifications);
                     </div>
                     <!-- Approved -->
                     <div class="col-xl-3 col-md-6">
-                        <div class="card h-100 border-0 shadow-sm border-start border-success border-4 rounded-3 hover-lift">
-                            <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col me-2">
-                                        <div class="text-xs fw-bold text-success text-uppercase mb-1">Approved</div>
-                                        <div class="h5 mb-0 fw-bold text-gray-800"><?php echo $approved_req_fac; ?></div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <i class="fas fa-check-circle fa-2x text-gray-300"></i>
                         <a href="my_requests.php?status=APPROVED" class="text-decoration-none">
                             <div class="card h-100 border-0 shadow-sm border-start border-success border-4 rounded-3 hover-lift">
                                 <div class="card-body">
@@ -264,15 +170,6 @@ $notif_count = count($notifications);
                     </div>
                     <!-- Rejected -->
                     <div class="col-xl-3 col-md-6">
-                        <div class="card h-100 border-0 shadow-sm border-start border-danger border-4 rounded-3 hover-lift">
-                            <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col me-2">
-                                        <div class="text-xs fw-bold text-danger text-uppercase mb-1">Rejected</div>
-                                        <div class="h5 mb-0 fw-bold text-gray-800"><?php echo $rejected_req_fac; ?></div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <i class="fas fa-times-circle fa-2x text-gray-300"></i>
                         <a href="my_requests.php?status=REJECTED" class="text-decoration-none">
                             <div class="card h-100 border-0 shadow-sm border-start border-danger border-4 rounded-3 hover-lift">
                                 <div class="card-body">

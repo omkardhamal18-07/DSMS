@@ -75,50 +75,12 @@ $departments = $conn->query($dept_query);
 <body>
     <div class="wrapper">
         <!-- Sidebar -->
-        <nav id="sidebar" class="sidebar shadow">
-            <div class="sidebar-header">
-                <h3><i class="fas fa-boxes-stacked me-2"></i> DSMS ERP</h3>
-            </div>
-            <ul class="list-unstyled components">
-                <li><a href="admin_dashboard.php"><i class="fas fa-chart-line"></i> Dashboard</a></li>
-                <li class="active"><a href="faculty_requests.php"><i class="fas fa-code-pull-request"></i> Faculty Requests</a></li>
-                <li><a href="inventory.php"><i class="fas fa-warehouse"></i> Inventory</a></li>
-                <li><a href="#"><i class="fas fa-dolly"></i> Issue Stationery</a></li>
-                <li><a href="#"><i class="fas fa-tags"></i> Categories</a></li>
-                <li><a href="#"><i class="fas fa-chart-pie"></i> Reports</a></li>
-                <li><a href="faculty_requests.php?status=PENDING"><i class="fas fa-bell"></i> Notifications</a></li>
-                <li><a href="#"><i class="fas fa-users"></i> Users</a></li>
-                <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
-                <li><a href="logout.php" class="text-danger"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
-            </ul>
-        </nav>
+        <?php include 'includes/sidebar.php'; ?>
 
         <!-- Page Content -->
         <div id="content">
             <!-- Top Navbar -->
-            <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4 rounded-3 top-navbar">
-                <div class="container-fluid">
-                    <button type="button" id="sidebarCollapse" class="btn btn-primary shadow-sm">
-                        <i class="fas fa-bars"></i>
-                    </button>
-                    <div class="d-none d-sm-block ms-3">
-                        <h5 class="mb-0 text-gray-800">Request History</h5>
-                    </div>
-                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
-                        <li class="nav-item">
-                            <div class="dropdown">
-                                <a class="nav-link dropdown-toggle d-flex align-items-center text-gray-800" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <span class="me-2 d-none d-lg-inline text-gray-600 small"><?php echo htmlspecialchars($_SESSION['name'] ?? 'Admin User'); ?></span>
-                                    <img src="HOD.png" alt="User Profile" class="rounded-circle shadow-sm" width="32" height="32" style="object-fit: cover;">
-                                </a>
-                                <ul class="dropdown-menu dropdown-menu-end shadow border-0 animated--grow-in" aria-labelledby="userDropdown">
-                                    <li><a class="dropdown-item text-danger" href="logout.php"><i class="fas fa-sign-out-alt fa-sm fa-fw me-2 text-gray-400"></i> Logout</a></li>
-                                </ul>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
+            <?php include 'includes/navbar.php'; ?>
 
             <!-- Main Content -->
             <div class="container-fluid px-0">

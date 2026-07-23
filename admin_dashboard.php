@@ -44,74 +44,12 @@ $total_faculty = $conn->query("SELECT COUNT(*) as c FROM users WHERE role = 'FAC
 <body data-role="ADMIN">
     <div class="wrapper">
         <!-- Sidebar -->
-        <nav id="sidebar" class="sidebar shadow">
-            <div class="sidebar-header">
-                <h3><i class="fas fa-boxes-stacked me-2"></i> DSMS ERP</h3>
-            </div>
-            <ul class="list-unstyled components">
-                <li class="active"><a href="admin_dashboard.php"><i class="fas fa-chart-line"></i> Dashboard</a></li>
-                <li><a href="faculty_requests.php"><i class="fas fa-code-pull-request"></i> Faculty Requests</a></li>
-                <li><a href="inventory.php"><i class="fas fa-warehouse"></i> Inventory</a></li>
-                <li><a href="issue_stationery.php"><i class="fas fa-dolly"></i> Issue Stationery</a></li>
-                <li><a href="#"><i class="fas fa-tags"></i> Categories</a></li>
-                <li><a href="#"><i class="fas fa-chart-pie"></i> Reports</a></li>
-                <li><a href="#" data-bs-toggle="modal" data-bs-target="#notificationCenterModal"><i class="fas fa-bell"></i> Notifications <span id="sidebarNotificationBadge" class="badge bg-danger rounded-pill float-end d-none">0</span></a></li>
-                <li><a href="#"><i class="fas fa-users"></i> Users</a></li>
-                <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
-                <li><a href="logout.php" class="text-danger"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
-            </ul>
-        </nav>
+        <?php include 'includes/sidebar.php'; ?>
 
         <!-- Page Content -->
         <div id="content">
             <!-- Top Navbar -->
-            <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4 rounded-3 top-navbar">
-                <div class="container-fluid">
-                    <button type="button" id="sidebarCollapse" class="btn btn-primary shadow-sm">
-                        <i class="fas fa-bars"></i>
-                    </button>
-
-                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
-                        <li class="nav-item dropdown me-2">
-                            <a class="nav-link position-relative text-gray-500 dropdown-toggle text-decoration-none" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-bell fs-5"></i>
-                                <span id="navNotificationBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none" style="font-size: 0.65rem;">
-                                    0
-                                </span>
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-end dropdown-menu-notifications shadow border-0 animated--grow-in" aria-labelledby="notificationDropdown">
-                                <div class="dropdown-header bg-primary text-white d-flex justify-content-between align-items-center py-2 px-3">
-                                    <span class="fw-bold"><i class="fas fa-bell me-1"></i> Notifications</span>
-                                    <div>
-                                        <button class="btn btn-sm btn-link text-white p-0 text-decoration-none me-2" id="markAllReadDropdownBtn" style="font-size: 0.75rem;">Mark All Read</button>
-                                    </div>
-                                </div>
-                                <div id="notificationDropdownList" class="notification-list-container">
-                                    <div class="text-center py-4"><div class="spinner-border spinner-border-sm text-primary"></div></div>
-                                </div>
-                                <div class="dropdown-footer bg-light text-center py-2 border-top">
-                                    <button class="btn btn-sm text-primary fw-bold p-0 border-0 bg-transparent" data-bs-toggle="modal" data-bs-target="#notificationCenterModal">View All Notifications Center</button>
-                                </div>
-                            </div>
-                        </li>
-                        <div class="topbar-divider d-none d-sm-block border-start mx-3" style="height: 2rem;"></div>
-                        <li class="nav-item">
-                            <div class="dropdown">
-                                <a class="nav-link dropdown-toggle d-flex align-items-center text-gray-800" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <span class="me-2 d-none d-lg-inline text-gray-600 small"><?php echo htmlspecialchars($_SESSION['name'] ?? 'Admin User'); ?></span>
-                                    <img src="HOD.png" alt="User Profile" class="rounded-circle shadow-sm" width="32" height="32" style="object-fit: cover;">
-                                </a>
-                                <ul class="dropdown-menu dropdown-menu-end shadow border-0 animated--grow-in" aria-labelledby="userDropdown">
-                                    <li><a class="dropdown-item" href="#"><i class="fas fa-user-circle fa-sm fa-fw me-2 text-gray-400"></i> Profile</a></li>
-                                    <li><a class="dropdown-item" href="#"><i class="fas fa-cog fa-sm fa-fw me-2 text-gray-400"></i> Settings</a></li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item text-danger" href="logout.php"><i class="fas fa-sign-out-alt fa-sm fa-fw me-2 text-gray-400"></i> Logout</a></li>
-                                </ul>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
+            <?php include 'includes/navbar.php'; ?>
 
             <!-- Dashboard Content -->
             <div class="container-fluid px-0">
@@ -176,31 +114,6 @@ $total_faculty = $conn->query("SELECT COUNT(*) as c FROM users WHERE role = 'FAC
                     </div>
                     <!-- Card 4: Approved Requests -->
                     <div class="col-xl-3 col-md-6">
-                        <div class="card h-100 border-0 shadow-sm border-start border-warning border-4 rounded-3 hover-lift">
-                            <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col me-2">
-                                        <div class="text-xs fw-bold text-warning text-uppercase mb-1">Pending Requests</div>
-                                        <div class="h5 mb-0 fw-bold text-gray-800"><?php echo number_format($pending_requests); ?></div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <i class="fas fa-clock fa-2x text-gray-300"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Card 4 -->
-                    <div class="col-xl-3 col-md-6">
-                        <div class="card h-100 border-0 shadow-sm border-start border-info border-4 rounded-3 hover-lift">
-                            <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col me-2">
-                                        <div class="text-xs fw-bold text-info text-uppercase mb-1">Today's Issued Items</div>
-                                        <div class="h5 mb-0 fw-bold text-gray-800"><?php echo number_format($today_issues); ?></div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <i class="fas fa-box-open fa-2x text-gray-300"></i>
                         <a href="faculty_requests.php?status=APPROVED" class="text-decoration-none">
                             <div class="card h-100 border-0 shadow-sm border-start border-success border-4 rounded-3 hover-lift">
                                 <div class="card-body">
@@ -235,17 +148,24 @@ $total_faculty = $conn->query("SELECT COUNT(*) as c FROM users WHERE role = 'FAC
                             </div>
                         </a>
                     </div>
-                    <!-- Card 6: Total Inventory (distinct items) -->
+                    <!-- Card 6: Completed Requests -->
                     <div class="col-xl-3 col-md-6">
-                        <div class="card h-100 border-0 shadow-sm border-start border-secondary border-4 rounded-3 hover-lift">
+                        <div class="card h-100 border-0 shadow-sm border-start border-dark border-4 rounded-3 hover-lift">
                             <div class="card-body">
                                 <div class="row no-gutters align-items-center">
                                     <div class="col me-2">
-                                        <div class="text-xs fw-bold text-secondary text-uppercase mb-1">Monthly Issued Items</div>
-                                        <div class="h5 mb-0 fw-bold text-gray-800"><?php echo number_format($monthly_issues); ?></div>
+                                        <div class="text-xs fw-bold text-dark text-uppercase mb-1">Completed Requests</div>
+                                        <div class="h5 mb-0 fw-bold text-gray-800"><?php echo number_format($completed_requests); ?></div>
                                     </div>
                                     <div class="col-auto">
-                                        <i class="fas fa-chart-area fa-2x text-gray-300"></i>
+                                        <i class="fas fa-check-double fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Card 7: Total Inventory -->
+                    <div class="col-xl-3 col-md-6">
                         <a href="inventory.php" class="text-decoration-none">
                             <div class="card h-100 border-0 shadow-sm border-start border-info border-4 rounded-3 hover-lift">
                                 <div class="card-body">
@@ -262,7 +182,7 @@ $total_faculty = $conn->query("SELECT COUNT(*) as c FROM users WHERE role = 'FAC
                             </div>
                         </a>
                     </div>
-                    <!-- Card 7: Available Stock -->
+                    <!-- Card 8: Available Stock -->
                     <div class="col-xl-3 col-md-6">
                         <a href="inventory.php?filter=available" class="text-decoration-none">
                             <div class="card h-100 border-0 shadow-sm border-start border-success border-4 rounded-3 hover-lift">
@@ -274,35 +194,6 @@ $total_faculty = $conn->query("SELECT COUNT(*) as c FROM users WHERE role = 'FAC
                                         </div>
                                         <div class="col-auto">
                                             <i class="fas fa-check-circle fa-2x text-gray-300"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                     <!-- Card 8 -->
-                     <div class="col-xl-3 col-md-6">
-                        <div class="card h-100 border-0 shadow-sm border-start border-dark border-4 rounded-3 hover-lift">
-                            <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col me-2">
-                                        <div class="text-xs fw-bold text-dark text-uppercase mb-1">Completed Requests</div>
-                                        <div class="h5 mb-0 fw-bold text-gray-800"><?php echo number_format($completed_requests); ?></div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <i class="fas fa-check-double fa-2x text-gray-300"></i>
-                    <!-- Card 8: Low Stock Alerts -->
-                    <div class="col-xl-3 col-md-6">
-                        <a href="inventory.php?filter=low_stock" class="text-decoration-none">
-                            <div class="card h-100 border-0 shadow-sm border-start border-danger border-4 rounded-3 hover-lift">
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col me-2">
-                                            <div class="text-xs fw-bold text-danger text-uppercase mb-1">Low Stock Alerts</div>
-                                            <div class="h5 mb-0 fw-bold text-gray-800"><?php echo number_format($total_alerts); ?></div>
-                                        </div>
-                                        <div class="col-auto">
-                                            <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
                                         </div>
                                     </div>
                                 </div>
