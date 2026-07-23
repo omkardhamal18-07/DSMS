@@ -94,5 +94,9 @@ if ($check_user_col->num_rows == 0) {
     $conn->query("UPDATE users SET department = 'Computer Science' WHERE role = 'FACULTY'");
 }
 
+// 6. Create notifications table
+include_once("notification_helper.php");
+ensure_notifications_table($conn);
+
 echo "Database updated successfully.\n";
 ?>

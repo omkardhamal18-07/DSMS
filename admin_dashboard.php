@@ -38,7 +38,7 @@ $total_faculty = $conn->query("SELECT COUNT(*) as c FROM users WHERE role = 'FAC
     <!-- Custom CSS -->
     <link rel="stylesheet" href="admin_style.css">
 </head>
-<body>
+<body data-role="ADMIN">
     <div class="wrapper">
         <!-- Sidebar -->
         <nav id="sidebar" class="sidebar shadow">
@@ -52,7 +52,7 @@ $total_faculty = $conn->query("SELECT COUNT(*) as c FROM users WHERE role = 'FAC
                 <li><a href="#"><i class="fas fa-dolly"></i> Issue Stationery</a></li>
                 <li><a href="#"><i class="fas fa-tags"></i> Categories</a></li>
                 <li><a href="#"><i class="fas fa-chart-pie"></i> Reports</a></li>
-                <li><a href="faculty_requests.php?status=PENDING"><i class="fas fa-bell"></i> Notifications <?php if($pending_requests > 0): ?><span class="badge bg-danger rounded-pill float-end"><?php echo $pending_requests; ?></span><?php endif; ?></a></li>
+                <li><a href="#" data-bs-toggle="modal" data-bs-target="#notificationCenterModal"><i class="fas fa-bell"></i> Notifications <span id="sidebarNotificationBadge" class="badge bg-danger rounded-pill float-end d-none">0</span></a></li>
                 <li><a href="#"><i class="fas fa-users"></i> Users</a></li>
                 <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
                 <li><a href="logout.php" class="text-danger"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
@@ -69,14 +69,27 @@ $total_faculty = $conn->query("SELECT COUNT(*) as c FROM users WHERE role = 'FAC
                     </button>
 
                     <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
-                        <li class="nav-item">
-                            <a class="nav-link position-relative text-gray-500" href="faculty_requests.php?status=PENDING"><i class="fas fa-bell fs-5"></i>
-                                <?php if($pending_requests > 0): ?>
-                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem;">
-                                    <?php echo $pending_requests; ?>
+                        <li class="nav-item dropdown me-2">
+                            <a class="nav-link position-relative text-gray-500 dropdown-toggle text-decoration-none" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-bell fs-5"></i>
+                                <span id="navNotificationBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none" style="font-size: 0.65rem;">
+                                    0
                                 </span>
-                                <?php endif; ?>
                             </a>
+                            <div class="dropdown-menu dropdown-menu-end dropdown-menu-notifications shadow border-0 animated--grow-in" aria-labelledby="notificationDropdown">
+                                <div class="dropdown-header bg-primary text-white d-flex justify-content-between align-items-center py-2 px-3">
+                                    <span class="fw-bold"><i class="fas fa-bell me-1"></i> Notifications</span>
+                                    <div>
+                                        <button class="btn btn-sm btn-link text-white p-0 text-decoration-none me-2" id="markAllReadDropdownBtn" style="font-size: 0.75rem;">Mark All Read</button>
+                                    </div>
+                                </div>
+                                <div id="notificationDropdownList" class="notification-list-container">
+                                    <div class="text-center py-4"><div class="spinner-border spinner-border-sm text-primary"></div></div>
+                                </div>
+                                <div class="dropdown-footer bg-light text-center py-2 border-top">
+                                    <button class="btn btn-sm text-primary fw-bold p-0 border-0 bg-transparent" data-bs-toggle="modal" data-bs-target="#notificationCenterModal">View All Notifications Center</button>
+                                </div>
+                            </div>
                         </li>
                         <div class="topbar-divider d-none d-sm-block border-start mx-3" style="height: 2rem;"></div>
                         <li class="nav-item">
@@ -425,12 +438,75 @@ $total_faculty = $conn->query("SELECT COUNT(*) as c FROM users WHERE role = 'FAC
         </div>
     </div>
 
+    <!-- Notification Center Modal -->
+    <div class="modal fade" id="notificationCenterModal" tabindex="-1" aria-labelledby="notificationCenterModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow rounded-3">
+                <div class="modal-header bg-primary text-white py-3">
+                    <h5 class="modal-title fw-bold" id="notificationCenterModalLabel"><i class="fas fa-bell me-2"></i> Notification Center</h5>
+                    <div class="d-flex align-items-center gap-2">
+                        <button class="btn btn-sm btn-outline-light rounded-pill px-3" id="markAllReadBtn"><i class="fas fa-check-double me-1"></i> Mark All as Read</button>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                </div>
+                <div class="modal-body p-0">
+                    <!-- Filters & Search Bar -->
+                    <div class="p-3 bg-light border-bottom">
+                        <div class="row g-2 align-items-center">
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-muted"></i></span>
+                                    <input type="text" id="notificationSearchInput" class="form-control border-start-0 ps-0" placeholder="Search notifications by keyword...">
+                                </div>
+                            </div>
+                            <div class="col-md-6 text-md-end">
+                                <div class="btn-group flex-wrap" role="group" aria-label="Notification Filters">
+                                    <button type="button" class="btn btn-sm btn-primary active notification-filter-pill" data-filter="ALL">All</button>
+                                    <button type="button" class="btn btn-sm btn-outline-primary notification-filter-pill" data-filter="FACULTY_REQUEST">Requests</button>
+                                    <button type="button" class="btn btn-sm btn-outline-primary notification-filter-pill" data-filter="LOW_STOCK">Low Stock</button>
+                                    <button type="button" class="btn btn-sm btn-outline-primary notification-filter-pill" data-filter="STOCK_UPDATED">Stock Updated</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Notification Feed List -->
+                    <div id="notificationModalList" class="p-2" style="max-height: 480px; overflow-y: auto;">
+                        <div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div></div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light justify-content-between py-2">
+                    <small class="text-muted"><i class="fas fa-sync-alt me-1"></i> Auto-refreshes every 30 seconds</small>
+                    <div id="notificationPagination"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Request Detail Modal (Triggered when clicking a Faculty Request notification) -->
+    <div class="modal fade" id="requestDetailModal" tabindex="-1" aria-labelledby="requestDetailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-md">
+            <div class="modal-content border-0 shadow rounded-3">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title fw-bold" id="requestDetailModalLabel"><i class="fas fa-file-alt me-2"></i> Faculty Request Details</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4" id="requestDetailModalBody">
+                    <div class="text-center py-4"><div class="spinner-border text-primary"></div></div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Bootstrap JS Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Custom JS -->
     <script src="admin_script.js"></script>
+    <script src="notification_center.js?v=1"></script>
     <script src="under_development.js?v=2"></script>
 </body>
 </html>

@@ -1,6 +1,7 @@
 <?php
 session_start();
 include("database/db.php");
+include_once("notification_helper.php");
 
 header('Content-Type: application/json');
 
@@ -24,7 +25,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $conn->begin_transaction();
         try {
             // Check request status and quantity
-            $stmt = $conn->prepare("SELECT r.stationery_id, r.requested_quantity, r.status, s.quantity_available, s.item_name FROM stationery_requests r JOIN stationery s ON r.stationery_id = s.stationery_id WHERE r.request_id = ?");
+            $stmt = $conn->prepare("SELECT r.faculty_id, r.stationery_id, r.requested_quantity, r.status, s.quantity_available, s.item_name FROM stationery_requests r JOIN stationery s ON r.stationery_id = s.stationery_id WHERE r.request_id = ?");
             $stmt->bind_param("i", $request_id);
             $stmt->execute();
             $result = $stmt->get_result();
@@ -57,6 +58,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $update_req = $conn->prepare("UPDATE stationery_requests SET status = 'APPROVED', reviewed_by = ?, review_date = NOW() WHERE request_id = ?");
             $update_req->bind_param("ii", $admin_id, $request_id);
             $update_req->execute();
+
+            // Notify Faculty
+            $title = "Request Approved: #REQ-" . str_pad($request_id, 4, '0', STR_PAD_LEFT);
+            $msg = "Your request for " . $req['requested_quantity'] . " unit(s) of '" . $req['item_name'] . "' has been APPROVED.";
+            create_notification($conn, $admin_id, $req['faculty_id'], 'FACULTY', 'REQUEST_STATUS', $title, $msg, $request_id);
+
+            // Check Low Stock condition
+            check_and_create_low_stock_notification($conn, $req['stationery_id']);
             
             $conn->commit();
             echo json_encode(['success' => true, 'message' => 'Request approved and stock deducted successfully.']);
@@ -85,7 +94,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $conn->begin_transaction();
         try {
             // Check request status
-            $stmt = $conn->prepare("SELECT status FROM stationery_requests WHERE request_id = ?");
+            $stmt = $conn->prepare("SELECT r.faculty_id, r.status, s.item_name FROM stationery_requests r JOIN stationery s ON r.stationery_id = s.stationery_id WHERE r.request_id = ?");
             $stmt->bind_param("i", $request_id);
             $stmt->execute();
             $result = $stmt->get_result();
@@ -102,6 +111,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $update_req = $conn->prepare("UPDATE stationery_requests SET status = 'REJECTED', remarks = ?, reviewed_by = ?, review_date = NOW() WHERE request_id = ?");
             $update_req->bind_param("sii", $reason, $admin_id, $request_id);
             $update_req->execute();
+
+            // Notify Faculty
+            $title = "Request Rejected: #REQ-" . str_pad($request_id, 4, '0', STR_PAD_LEFT);
+            $msg = "Your request for '" . $req['item_name'] . "' was REJECTED.\nAdmin Remarks: " . $reason;
+            create_notification($conn, $admin_id, $req['faculty_id'], 'FACULTY', 'REQUEST_STATUS', $title, $msg, $request_id);
             
             $conn->commit();
             echo json_encode(['success' => true, 'message' => 'Request rejected successfully.']);
