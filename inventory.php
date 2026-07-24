@@ -92,34 +92,19 @@ while($row = $master_items_result->fetch_assoc()) {
 }
 $master_json = json_encode($master_list);
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inventory Management - DSMS</title>
-    <!-- Bootstrap 5 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="admin_style.css">
+<?php
+$page_title = 'Inventory Management - DSMS';
+ob_start();
+?>
     <style>
         .status-badge { width: 100px; text-align: center; }
         .action-btn { margin-right: 5px; }
     </style>
-</head>
-<body>
-    <div class="wrapper">
-        <!-- Sidebar -->
-        <?php include 'includes/sidebar.php'; ?>
-
-        <!-- Page Content -->
-        <div id="content">
-            <!-- Top Navbar -->
-            <?php include 'includes/navbar.php'; ?>
-
-            <!-- Main Inventory Content -->
+<?php
+$extra_css = ob_get_clean();
+include 'includes/header.php';
+?>
+<!-- Main Inventory Content -->
             <div class="container-fluid px-0">
                 
                 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -428,8 +413,9 @@ $master_json = json_encode($master_list);
         </div>
     </div>
 
-    <!-- Bootstrap JS Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<?php
+ob_start();
+?>
     <script>
         const masterList = <?php echo $master_json; ?>;
 
@@ -444,12 +430,6 @@ $master_json = json_encode($master_list);
                 catInput.value = '';
             }
         }
-
-        // UI Interaction Functions
-        document.getElementById('sidebarCollapse').addEventListener('click', function () {
-            document.getElementById('sidebar').classList.toggle('active');
-            document.getElementById('content').classList.toggle('active');
-        });
 
         const editModal = new bootstrap.Modal(document.getElementById('editItemModal'));
         function openEditModal(item) {
@@ -521,6 +501,7 @@ $master_json = json_encode($master_list);
             }
         }
     </script>
-    <script src="under_development.js?v=2"></script>
-</body>
-</html>
+<?php
+$extra_js = ob_get_clean();
+include 'includes/footer.php';
+?>

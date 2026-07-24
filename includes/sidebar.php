@@ -27,13 +27,14 @@ $role = $_SESSION['role'] ?? '';
             <li><a href="#"><i class="fas fa-chart-pie"></i> Reports</a></li>
             <li><a href="#" data-bs-toggle="modal" data-bs-target="#notificationCenterModal"><i class="fas fa-bell"></i> Notifications <span id="sidebarNotificationBadge" class="badge bg-danger rounded-pill float-end d-none">0</span></a></li>
             <li><a href="#"><i class="fas fa-users"></i> Users</a></li>
-            <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
+            <li class="<?php echo ($current_page == 'settings.php') ? 'active' : ''; ?>"><a href="settings.php"><i class="fas fa-cog"></i> Settings</a></li>
         <?php else: ?>
             <li class="<?php echo ($current_page == 'faculty_dashboard.php') ? 'active' : ''; ?>"><a href="faculty_dashboard.php"><i class="fas fa-chart-line"></i> Dashboard</a></li>
             <li class="<?php echo ($current_page == 'new_request.php') ? 'active' : ''; ?>"><a href="new_request.php"><i class="fas fa-plus-circle"></i> New Request</a></li>
             <li class="<?php echo ($current_page == 'my_requests.php' || $current_page == 'request_history.php') ? 'active' : ''; ?>"><a href="my_requests.php"><i class="fas fa-clock-rotate-left"></i> Request History</a></li>
             <li><a href="#" data-bs-toggle="modal" data-bs-target="#notificationCenterModal"><i class="fas fa-bell"></i> Notifications <span id="sidebarNotificationBadge" class="badge bg-danger rounded-pill float-end d-none">0</span></a></li>
             <li><a href="#"><i class="fas fa-user"></i> Profile</a></li>
+            <li class="<?php echo ($current_page == 'settings.php') ? 'active' : ''; ?>"><a href="settings.php"><i class="fas fa-cog"></i> Settings</a></li>
         <?php endif; ?>
         <li><a href="logout.php" class="text-danger"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
     </ul>

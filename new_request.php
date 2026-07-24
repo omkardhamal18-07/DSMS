@@ -35,30 +35,12 @@ if ($n_stmt = $conn->prepare($notif_query)) {
     $notif_count = $n_stmt->get_result()->fetch_assoc()['cnt'];
 }
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>New Stationery Request - DSMS</title>
-    <!-- Bootstrap 5 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="admin_style.css">
-</head>
-<body>
-    <div class="wrapper">
-        <!-- Sidebar -->
-        <?php include 'includes/sidebar.php'; ?>
 
-        <!-- Page Content -->
-        <div id="content">
-            <!-- Top Navbar -->
-            <?php include 'includes/navbar.php'; ?>
-
-            <!-- Main Content Area -->
+<?php
+$page_title = 'New Stationery Request - DSMS';
+include 'includes/header.php';
+?>
+<!-- Main Content Area -->
             <div class="container-fluid px-0">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h1 class="h3 fw-bold text-gray-800 mb-0">New Stationery Request</h1>
@@ -317,5 +299,5 @@ if ($n_stmt = $conn->prepare($notif_query)) {
             }
         }
     </script>
-</body>
-</html>
+
+<?php include 'includes/footer.php'; ?>

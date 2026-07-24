@@ -54,19 +54,12 @@ $items_json = json_encode($stationery_items);
 // Unread notifications count
 $pending_count = $conn->query("SELECT COUNT(*) as c FROM stationery_requests WHERE status = 'PENDING'")->fetch_assoc()['c'];
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Issue Stationery - DSMS</title>
-    <!-- Bootstrap 5 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="admin_style.css">
-    <style>
+
+<?php
+$page_title = 'Issue Stationery - DSMS';
+ob_start();
+?>
+<style>
         .nav-tabs .nav-link {
             color: #4e73df;
             font-weight: bold;
@@ -80,18 +73,11 @@ $pending_count = $conn->query("SELECT COUNT(*) as c FROM stationery_requests WHE
         .item-row { transition: all 0.2s; }
         .item-row:hover { background-color: #f8f9fc; }
     </style>
-</head>
-<body>
-    <div class="wrapper">
-        <!-- Sidebar -->
-        <?php include 'includes/sidebar.php'; ?>
-
-        <!-- Page Content -->
-        <div id="content">
-            <!-- Top Navbar -->
-            <?php include 'includes/navbar.php'; ?>
-
-            <div class="container-fluid px-0">
+<?php
+$extra_css = ob_get_clean();
+include 'includes/header.php';
+?>
+<div class="container-fluid px-0">
                 <div id="alertPlaceholder"></div>
 
                 <!-- Tabs -->
@@ -381,13 +367,10 @@ $pending_count = $conn->query("SELECT COUNT(*) as c FROM stationery_requests WHE
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <!-- Bootstrap JS Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        const allItems = <?php echo $items_json; ?>;
+<?php ob_start(); ?>
+<script>
+const allItems = <?php echo $items_json; ?>;
         
         // --- Sidebar Toggle ---
         document.getElementById('sidebarCollapse').addEventListener('click', function () {
@@ -700,6 +683,8 @@ $pending_count = $conn->query("SELECT COUNT(*) as c FROM stationery_requests WHE
                 body.innerHTML = `<div class="alert alert-danger">Error fetching details.</div>`;
             }
         }
-    </script>
-</body>
-</html>
+</script>
+<?php
+$extra_js = ob_get_clean();
+include 'includes/footer.php';
+?>

@@ -27,9 +27,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Ignore if it's already functional based on classes/attributes
         if (target.hasAttribute('data-bs-toggle') || target.hasAttribute('data-bs-dismiss') || target.id === 'sidebarCollapse' || target.hasAttribute('onclick')) return;
-        if (target.classList.contains('view-btn') || target.classList.contains('approve-btn') || target.classList.contains('reject-btn') || target.classList.contains('btn-close') || target.classList.contains('dropdown-item')) {
-            // dropdown items with href="#" are handled by the anchor check below, but logout isn't href="#".
-            // Let's refine:
+        if (target.classList.contains('view-btn') || target.classList.contains('approve-btn') || target.classList.contains('reject-btn') || target.classList.contains('btn-close') || target.classList.contains('dropdown-item') || target.classList.contains('notification-filter-pill') || target.id === 'markAllReadBtn' || target.id === 'markAllReadDropdownBtn') {
+            return;
         }
 
         let shouldShowPopup = false;

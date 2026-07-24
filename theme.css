@@ -1,0 +1,194 @@
+/* theme.css - DSMS Theme System */
+
+:root {
+    /* Transitions */
+    --theme-transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+
+    /* Light Theme (Default) */
+    --dsms-bg: #f8f9fc;
+    --dsms-card-bg: #ffffff;
+    --dsms-sidebar-bg: #ffffff;
+    --dsms-navbar-bg: #ffffff;
+    --dsms-border: #e3e6f0;
+    
+    --dsms-primary: #3B82F6;
+    --dsms-success: #22C55E;
+    --dsms-warning: #F59E0B;
+    --dsms-danger: #EF4444;
+    --dsms-info: #0dcaf0;
+    
+    --dsms-text: #5a5c69;
+    --dsms-text-secondary: #858796;
+    --dsms-heading: #3a3b45;
+
+    /* Override Bootstrap Variables */
+    --bs-body-bg: var(--dsms-bg);
+    --bs-body-color: var(--dsms-text);
+    --bs-card-bg: var(--dsms-card-bg);
+    --bs-card-border-color: var(--dsms-border);
+    --bs-primary: var(--dsms-primary);
+    --bs-success: var(--dsms-success);
+    --bs-warning: var(--dsms-warning);
+    --bs-danger: var(--dsms-danger);
+    --bs-light: var(--dsms-card-bg);
+}
+
+body.dark-theme {
+    /* Dark Theme */
+    --dsms-bg: #0F172A;
+    --dsms-card-bg: #1E293B;
+    --dsms-sidebar-bg: #111827;
+    --dsms-navbar-bg: #1F2937;
+    --dsms-border: #334155;
+    
+    --dsms-text: #F8FAFC;
+    --dsms-text-secondary: #CBD5E1;
+    --dsms-heading: #FFFFFF;
+
+    /* Override Bootstrap Variables for Dark Mode */
+    --bs-body-bg: var(--dsms-bg);
+    --bs-body-color: var(--dsms-text);
+    --bs-card-bg: var(--dsms-card-bg);
+    --bs-card-border-color: var(--dsms-border);
+    --bs-light: #1F2937;
+    --bs-dark: #F8FAFC;
+}
+
+/* Global Transitions */
+body, .card, .navbar, .sidebar, .modal-content, .dropdown-menu, .form-control, .form-select, .btn {
+    transition: var(--theme-transition);
+}
+
+/* Base Styles */
+body {
+    background-color: var(--dsms-bg);
+    color: var(--dsms-text);
+}
+
+h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+    color: var(--dsms-heading);
+}
+
+/* Cards */
+.card {
+    background-color: var(--dsms-card-bg);
+    border-color: var(--dsms-border);
+}
+.card-header, .card-footer {
+    background-color: rgba(0, 0, 0, 0.03);
+    border-color: var(--dsms-border);
+}
+body.dark-theme .card-header, body.dark-theme .card-footer {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Tables */
+.table {
+    color: var(--dsms-text);
+    border-color: var(--dsms-border);
+}
+.table > :not(caption) > * > * {
+    background-color: transparent;
+    color: var(--dsms-text);
+    border-bottom-color: var(--dsms-border);
+}
+body.dark-theme .table-striped > tbody > tr:nth-of-type(odd) > * {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+body.dark-theme .table-hover > tbody > tr:hover > * {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Forms */
+.form-control, .form-select {
+    background-color: var(--dsms-card-bg);
+    color: var(--dsms-text);
+    border-color: var(--dsms-border);
+}
+.form-control:focus, .form-select:focus {
+    background-color: var(--dsms-card-bg);
+    color: var(--dsms-text);
+    border-color: var(--dsms-primary);
+    box-shadow: 0 0 0 0.25rem rgba(59, 130, 246, 0.25);
+}
+body.dark-theme .form-control::placeholder {
+    color: var(--dsms-text-secondary);
+}
+
+/* Modals */
+.modal-content {
+    background-color: var(--dsms-card-bg);
+    border-color: var(--dsms-border);
+}
+.modal-header, .modal-footer {
+    border-color: var(--dsms-border);
+}
+body.dark-theme .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+/* Dropdowns */
+.dropdown-menu {
+    background-color: var(--dsms-card-bg);
+    border-color: var(--dsms-border);
+}
+.dropdown-item {
+    color: var(--dsms-text);
+}
+.dropdown-item:hover, .dropdown-item:focus {
+    background-color: rgba(15, 23, 42, 0.1);
+    color: var(--dsms-heading);
+}
+body.dark-theme .dropdown-item:hover, body.dark-theme .dropdown-item:focus {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+.dropdown-divider {
+    border-color: var(--dsms-border);
+}
+
+/* Breadcrumbs & Pagination */
+.breadcrumb-item a {
+    color: var(--dsms-primary);
+}
+.breadcrumb-item.active {
+    color: var(--dsms-text-secondary);
+}
+.page-link {
+    background-color: var(--dsms-card-bg);
+    border-color: var(--dsms-border);
+    color: var(--dsms-primary);
+}
+.page-link:hover {
+    background-color: rgba(15, 23, 42, 0.05);
+    border-color: var(--dsms-border);
+}
+body.dark-theme .page-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+.page-item.disabled .page-link {
+    background-color: var(--dsms-card-bg);
+    border-color: var(--dsms-border);
+    color: var(--dsms-text-secondary);
+}
+.page-item.active .page-link {
+    background-color: var(--dsms-primary);
+    border-color: var(--dsms-primary);
+    color: #fff;
+}
+
+/* Badges */
+.badge {
+    color: #fff;
+}
+.bg-primary { background-color: var(--dsms-primary) !important; }
+.bg-success { background-color: var(--dsms-success) !important; }
+.bg-warning { background-color: var(--dsms-warning) !important; }
+.bg-danger { background-color: var(--dsms-danger) !important; }
+
+/* Custom text classes */
+.text-gray-800 { color: var(--dsms-heading) !important; }
+.text-gray-600 { color: var(--dsms-text) !important; }
+.text-gray-400 { color: var(--dsms-text-secondary) !important; }
+
+/* Ensure icons have correct colors */
+body.dark-theme i.text-gray-400 { color: var(--dsms-text-secondary) !important; }

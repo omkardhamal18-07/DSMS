@@ -17,23 +17,24 @@ $user_role = $_SESSION['role'] ?? 'FACULTY';
 $action = $_REQUEST['action'] ?? '';
 
 // Helper for relative timestamps
-function get_relative_time($datetime_str) {
-    $time = strtotime($datetime_str);
-    $now = time();
-    $diff = $now - $time;
+function get_relative_time($diff_seconds, $datetime_str) {
+    $diff_seconds = max(0, intval($diff_seconds));
     
-    if ($diff < 60) {
+    if ($diff_seconds < 60) {
         return "Just now";
-    } elseif ($diff < 3600) {
-        $mins = floor($diff / 60);
-        return $mins . ($mins == 1 ? " minute ago" : " minutes ago");
-    } elseif ($diff < 86400) {
-        $hours = floor($diff / 3600);
+    } elseif ($diff_seconds < 3600) {
+        $mins = floor($diff_seconds / 60);
+        return $mins . " min ago";
+    } elseif ($diff_seconds < 86400) {
+        $hours = floor($diff_seconds / 3600);
         return $hours . ($hours == 1 ? " hour ago" : " hours ago");
-    } elseif ($diff < 172800) {
-        return "Yesterday at " . date("g:i A", $time);
+    } elseif ($diff_seconds < 172800) {
+        return "Yesterday";
+    } elseif ($diff_seconds < 604800) {
+        $days = floor($diff_seconds / 86400);
+        return $days . " days ago";
     } else {
-        return date("M j, Y g:i A", $time);
+        return date("j M Y", strtotime($datetime_str));
     }
 }
 
@@ -117,7 +118,7 @@ if ($action === 'fetch') {
     $unread_count = $stmt_unread->get_result()->fetch_assoc()['unread'];
 
     // Fetch Notifications
-    $fetch_sql = "SELECT * FROM notifications WHERE $where_sql ORDER BY created_at DESC LIMIT ? OFFSET ?";
+    $fetch_sql = "SELECT *, TIMESTAMPDIFF(SECOND, created_at, NOW()) AS diff_seconds FROM notifications WHERE $where_sql ORDER BY created_at DESC LIMIT ? OFFSET ?";
     $params[] = $limit;
     $params[] = $offset;
     $types .= "ii";
@@ -129,7 +130,7 @@ if ($action === 'fetch') {
 
     $notifications = [];
     while ($row = $result->fetch_assoc()) {
-        $row['relative_time'] = get_relative_time($row['created_at']);
+        $row['relative_time'] = get_relative_time($row['diff_seconds'], $row['created_at']);
         $row['formatted_date'] = date("d M Y, h:i A", strtotime($row['created_at']));
         $notifications[] = $row;
     }
@@ -145,9 +146,9 @@ if ($action === 'fetch') {
     exit();
 }
 
-if ($action === 'mark_read' || $action === 'mark_unread') {
+if ($action === 'mark_read') {
     $notification_id = intval($_POST['notification_id'] ?? 0);
-    $new_status = ($action === 'mark_read') ? 1 : 0;
+    $new_status = 1;
 
     if ($notification_id <= 0) {
         echo json_encode(['success' => false, 'message' => 'Invalid notification ID.']);

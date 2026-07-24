@@ -27,31 +27,11 @@ $monthly_requests = $conn->query("SELECT COUNT(*) as c FROM stationery_requests 
 
 // Fetch Users Stats
 $total_faculty = $conn->query("SELECT COUNT(*) as c FROM users WHERE role = 'FACULTY'")->fetch_assoc()['c'];
+
+$page_title = 'ERP Admin Dashboard - DSMS';
+include 'includes/header.php';
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ERP Admin Dashboard - DSMS</title>
-    <!-- Bootstrap 5 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="admin_style.css">
-</head>
-<body data-role="ADMIN">
-    <div class="wrapper">
-        <!-- Sidebar -->
-        <?php include 'includes/sidebar.php'; ?>
-
-        <!-- Page Content -->
-        <div id="content">
-            <!-- Top Navbar -->
-            <?php include 'includes/navbar.php'; ?>
-
-            <!-- Dashboard Content -->
+<!-- Dashboard Content -->
             <div class="container-fluid px-0">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h1 class="h3 fw-bold text-gray-800 mb-0">Dashboard</h1>
@@ -378,75 +358,5 @@ $total_faculty = $conn->query("SELECT COUNT(*) as c FROM users WHERE role = 'FAC
         </div>
     </div>
 
-    <!-- Notification Center Modal -->
-    <div class="modal fade" id="notificationCenterModal" tabindex="-1" aria-labelledby="notificationCenterModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content border-0 shadow rounded-3">
-                <div class="modal-header bg-primary text-white py-3">
-                    <h5 class="modal-title fw-bold" id="notificationCenterModalLabel"><i class="fas fa-bell me-2"></i> Notification Center</h5>
-                    <div class="d-flex align-items-center gap-2">
-                        <button class="btn btn-sm btn-outline-light rounded-pill px-3" id="markAllReadBtn"><i class="fas fa-check-double me-1"></i> Mark All as Read</button>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                </div>
-                <div class="modal-body p-0">
-                    <!-- Filters & Search Bar -->
-                    <div class="p-3 bg-light border-bottom">
-                        <div class="row g-2 align-items-center">
-                            <div class="col-md-6">
-                                <div class="input-group">
-                                    <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-muted"></i></span>
-                                    <input type="text" id="notificationSearchInput" class="form-control border-start-0 ps-0" placeholder="Search notifications by keyword...">
-                                </div>
-                            </div>
-                            <div class="col-md-6 text-md-end">
-                                <div class="btn-group flex-wrap" role="group" aria-label="Notification Filters">
-                                    <button type="button" class="btn btn-sm btn-primary active notification-filter-pill" data-filter="ALL">All</button>
-                                    <button type="button" class="btn btn-sm btn-outline-primary notification-filter-pill" data-filter="FACULTY_REQUEST">Requests</button>
-                                    <button type="button" class="btn btn-sm btn-outline-primary notification-filter-pill" data-filter="LOW_STOCK">Low Stock</button>
-                                    <button type="button" class="btn btn-sm btn-outline-primary notification-filter-pill" data-filter="STOCK_UPDATED">Stock Updated</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Notification Feed List -->
-                    <div id="notificationModalList" class="p-2" style="max-height: 480px; overflow-y: auto;">
-                        <div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div></div>
-                    </div>
-                </div>
-                <div class="modal-footer bg-light justify-content-between py-2">
-                    <small class="text-muted"><i class="fas fa-sync-alt me-1"></i> Auto-refreshes every 30 seconds</small>
-                    <div id="notificationPagination"></div>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- Request Detail Modal (Triggered when clicking a Faculty Request notification) -->
-    <div class="modal fade" id="requestDetailModal" tabindex="-1" aria-labelledby="requestDetailModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-md">
-            <div class="modal-content border-0 shadow rounded-3">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title fw-bold" id="requestDetailModalLabel"><i class="fas fa-file-alt me-2"></i> Faculty Request Details</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body p-4" id="requestDetailModalBody">
-                    <div class="text-center py-4"><div class="spinner-border text-primary"></div></div>
-                </div>
-                <div class="modal-footer bg-light">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Bootstrap JS Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Custom JS -->
-    <script src="admin_script.js"></script>
-    <script src="notification_center.js?v=1"></script>
-    <script src="under_development.js?v=2"></script>
-</body>
-</html>
+<?php include 'includes/footer.php'; ?>

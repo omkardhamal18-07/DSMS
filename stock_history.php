@@ -35,30 +35,12 @@ if ($stmt = $conn->prepare($history_query)) {
     }
 }
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stock History - DSMS</title>
-    <!-- Bootstrap 5 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="admin_style.css">
-</head>
-<body>
-    <div class="wrapper">
-        <!-- Sidebar -->
-        <?php include 'includes/sidebar.php'; ?>
 
-        <!-- Page Content -->
-        <div id="content">
-            <!-- Top Navbar -->
-            <?php include 'includes/navbar.php'; ?>
-
-            <!-- Main Content -->
+<?php
+$page_title = 'Stock History - DSMS';
+include 'includes/header.php';
+?>
+<!-- Main Content -->
             <div class="container-fluid px-0">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h1 class="h3 fw-bold text-gray-800 mb-0">Stock Update Log</h1>
@@ -155,13 +137,10 @@ if ($stmt = $conn->prepare($history_query)) {
                     </form>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <!-- Bootstrap JS Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        document.getElementById('sidebarCollapse').addEventListener('click', function () {
+<?php ob_start(); ?>
+<script>
+document.getElementById('sidebarCollapse').addEventListener('click', function () {
             document.getElementById('sidebar').classList.toggle('active');
             document.getElementById('content').classList.toggle('active');
         });
@@ -208,7 +187,8 @@ if ($stmt = $conn->prepare($history_query)) {
                 submitBtn.disabled = false;
             }
         }
-    </script>
-    <script src="under_development.js"></script>
-</body>
-</html>
+</script>
+<?php
+$extra_js = ob_get_clean();
+include 'includes/footer.php';
+?>

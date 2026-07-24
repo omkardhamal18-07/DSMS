@@ -1,6 +1,7 @@
 <?php
 session_start();
 include("database/db.php");
+require_once "notification_helper.php";
 
 header('Content-Type: application/json');
 
@@ -54,6 +55,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->bind_param("iiissss", $faculty_id, $stationery_id, $qty, $purpose, $priority, $required_date, $remarks);
 
         if ($stmt->execute()) {
+            $request_id = $conn->insert_id;
+            
+            // Generate Admin Notification
+            $fac_stmt = $conn->prepare("SELECT name FROM users WHERE user_id = ?");
+            $fac_stmt->bind_param("i", $faculty_id);
+            $fac_stmt->execute();
+            $fac_res = $fac_stmt->get_result();
+            $fac_name = $fac_res->num_rows > 0 ? $fac_res->fetch_assoc()['name'] : 'A faculty member';
+            
+            $item_stmt2 = $conn->prepare("SELECT item_name FROM stationery WHERE stationery_id = ?");
+            $item_stmt2->bind_param("i", $stationery_id);
+            $item_stmt2->execute();
+            $item_res = $item_stmt2->get_result();
+            $item_name = $item_res->num_rows > 0 ? $item_res->fetch_assoc()['item_name'] : 'Stationery';
+            
+            create_notification(
+                $conn, 
+                $faculty_id, 
+                null, 
+                'ADMIN', 
+                'FACULTY_REQUEST', 
+                'New Stationery Request', 
+                "$fac_name has requested $qty x $item_name. Priority: $priority.", 
+                $request_id
+            );
+
             echo json_encode(['success' => true, 'message' => 'Stationery request submitted successfully.']);
         } else {
             echo json_encode(['success' => false, 'message' => 'Failed to submit request: ' . $conn->error]);

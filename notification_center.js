@@ -168,9 +168,13 @@ document.addEventListener("DOMContentLoaded", function () {
                     </small>
                 </div>
                 <div class="notification-actions d-flex flex-column gap-1 ms-2 align-items-center">
-                    <button class="btn btn-sm text-secondary p-0 btn-toggle-read" title="${item.is_read == 0 ? 'Mark as Read' : 'Mark as Unread'}" onclick="toggleReadStatus(${item.notification_id}, ${item.is_read}, event)">
-                        <i class="fas ${item.is_read == 0 ? 'fa-envelope' : 'fa-envelope-open'} fs-6"></i>
+                    ${item.is_read == 0 ? `
+                    <button class="btn btn-sm text-secondary p-0 btn-toggle-read" title="Mark as Read" onclick="toggleReadStatus(${item.notification_id}, ${item.is_read}, event)">
+                        <i class="fas fa-envelope fs-6"></i>
                     </button>
+                    ` : `
+                    <span class="text-muted"><i class="fas fa-envelope-open fs-6"></i></span>
+                    `}
                     <button class="btn btn-sm text-danger p-0 btn-delete-notif" title="Delete" onclick="deleteNotification(${item.notification_id}, event)">
                         <i class="fas fa-trash-alt fs-6"></i>
                     </button>
@@ -181,15 +185,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function loadDropdownNotifications() {
         if (!dropdownList) return;
+        dropdownList.style.transition = 'opacity 0.2s ease-in-out';
+        dropdownList.style.opacity = '0.5';
+        
         fetch('notifications_api.php?action=fetch&limit=5&page=1')
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
                     if (data.notifications.length === 0) {
                         dropdownList.innerHTML = `
-                            <div class="empty-notification-state">
-                                <i class="fas fa-bell-slash"></i>
-                                <p class="mb-0 text-muted">No notifications yet.</p>
+                            <div class="empty-notification-state p-3 text-center">
+                                <i class="fas fa-bell-slash fa-2x text-gray-300 mb-2"></i>
+                                <p class="mb-0 text-muted small">No notifications yet.</p>
                             </div>
                         `;
                     } else {
@@ -200,13 +207,25 @@ document.addEventListener("DOMContentLoaded", function () {
                         dropdownList.innerHTML = html;
                     }
                 }
+                dropdownList.style.opacity = '1';
             })
-            .catch(err => console.error('Error loading dropdown notifications:', err));
+            .catch(err => {
+                console.error('Error loading dropdown notifications:', err);
+                dropdownList.style.opacity = '1';
+                dropdownList.style.pointerEvents = 'auto';
+            });
     }
 
     function loadModalNotifications(page = 1) {
         if (!modalList) return;
-        modalList.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>';
+        
+        if (modalList.innerHTML.trim() !== '') {
+            modalList.style.minHeight = modalList.offsetHeight + 'px';
+        }
+        
+        modalList.style.transition = 'opacity 0.2s ease-in-out';
+        modalList.style.opacity = '0.5';
+        modalList.style.pointerEvents = 'none';
 
         const url = `notifications_api.php?action=fetch&page=${page}&limit=10&filter=${encodeURIComponent(currentFilter)}&search=${encodeURIComponent(currentSearch)}`;
         fetch(url)
@@ -216,7 +235,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     updateBadgeUI(data.unread_count);
                     if (data.notifications.length === 0) {
                         modalList.innerHTML = `
-                            <div class="empty-notification-state py-5">
+                            <div class="empty-notification-state py-5 text-center">
                                 <i class="fas fa-inbox fa-3x text-gray-300 mb-3"></i>
                                 <h6 class="fw-bold text-gray-800">No Notifications Found</h6>
                                 <p class="mb-0 text-muted small">There are no notifications matching your current filter criteria.</p>
@@ -232,10 +251,16 @@ document.addEventListener("DOMContentLoaded", function () {
                         renderPagination(data.current_page, data.total_pages);
                     }
                 }
+                modalList.style.opacity = '1';
+                modalList.style.pointerEvents = 'auto';
+                setTimeout(() => { modalList.style.minHeight = ''; }, 250);
             })
             .catch(err => {
                 console.error('Error loading modal notifications:', err);
-                modalList.innerHTML = '<div class="text-center text-danger py-4">Failed to load notifications. Please try again.</div>';
+                modalList.innerHTML = '<div class="text-center py-5 text-danger">Error loading notifications.</div>';
+                modalList.style.opacity = '1';
+                modalList.style.pointerEvents = 'auto';
+                setTimeout(() => { modalList.style.minHeight = ''; }, 250);
             });
     }
 
@@ -273,7 +298,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     window.toggleReadStatus = function (id, currentStatus, event) {
         if (event) event.stopPropagation();
-        const action = (currentStatus == 0) ? 'mark_read' : 'mark_unread';
+        if (currentStatus != 0) return; // Only allow Unread -> Read
+
+        const action = 'mark_read';
 
         const formData = new FormData();
         formData.append('notification_id', id);
@@ -316,14 +343,42 @@ document.addEventListener("DOMContentLoaded", function () {
     };
 
     function markAllAsRead() {
+        const btn1 = document.getElementById('markAllReadBtn');
+        const btn2 = document.getElementById('markAllReadDropdownBtn');
+        if (btn1) btn1.disabled = true;
+        if (btn2) btn2.disabled = true;
+
         fetch('notifications_api.php?action=mark_all_read', { method: 'POST' })
             .then(res => res.json())
             .then(data => {
+                if (btn1) btn1.disabled = false;
+                if (btn2) btn2.disabled = false;
+                
                 if (data.success) {
                     fetchUnreadCount();
                     loadDropdownNotifications();
-                    if (modalList) loadModalNotifications(1);
+                    if (document.getElementById('notificationModalList')) loadModalNotifications(1);
+                    // Show small visual feedback
+                    const toast = document.createElement('div');
+                    toast.className = 'position-fixed bottom-0 end-0 p-3';
+                    toast.style.zIndex = '9999';
+                    toast.innerHTML = `<div class="toast show align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                                          <div class="d-flex">
+                                            <div class="toast-body">All notifications marked as read.</div>
+                                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                                          </div>
+                                        </div>`;
+                    document.body.appendChild(toast);
+                    setTimeout(() => toast.remove(), 3000);
+                } else {
+                    alert('Error: ' + data.message);
                 }
+            })
+            .catch(err => {
+                if (btn1) btn1.disabled = false;
+                if (btn2) btn2.disabled = false;
+                console.error('Error marking all as read:', err);
+                alert('An error occurred while marking notifications as read.');
             });
     }
 

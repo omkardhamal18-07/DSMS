@@ -61,46 +61,22 @@ if ($r_stmt = $conn->prepare($query)) {
         $requests[] = $row;
     }
 }
-
-// Calculate notification count (recent reviews in last 7 days)
-$notif_count = 0;
-$notif_query = "SELECT COUNT(*) as cnt FROM stationery_requests WHERE faculty_id = ? AND status IN ('APPROVED', 'REJECTED') AND review_date >= DATE_SUB(NOW(), INTERVAL 7 DAY)";
-if ($n_stmt = $conn->prepare($notif_query)) {
-    $n_stmt->bind_param("i", $user_id);
-    $n_stmt->execute();
-    $notif_count = $n_stmt->get_result()->fetch_assoc()['cnt'];
-}
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Request History - DSMS</title>
-    <!-- Bootstrap 5 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="admin_style.css">
-    <style>
+<?php
+$page_title = 'Request History - DSMS';
+ob_start();
+?>
+<style>
         .hover-lift:hover {
             transform: translateY(-5px);
             transition: transform 0.3s ease;
         }
     </style>
-</head>
-<body>
-    <div class="wrapper">
-        <!-- Sidebar -->
-        <?php include 'includes/sidebar.php'; ?>
-
-        <!-- Page Content -->
-        <div id="content">
-            <!-- Top Navbar -->
-            <?php include 'includes/navbar.php'; ?>
-
-            <!-- Main Content -->
+<?php
+$extra_css = ob_get_clean();
+include 'includes/header.php';
+?>
+<!-- Main Content -->
             <div class="container-fluid px-0">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h1 class="h3 fw-bold text-gray-800 mb-0">My Stationery Requests</h1>
@@ -377,13 +353,10 @@ if ($n_stmt = $conn->prepare($notif_query)) {
                     </div>
                 </form>
             </div>
-        </div>
-    </div>
 
-    <!-- Bootstrap JS Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        document.getElementById('sidebarCollapse').addEventListener('click', function () {
+<?php ob_start(); ?>
+<script>
+document.getElementById('sidebarCollapse').addEventListener('click', function () {
             document.getElementById('sidebar').classList.toggle('active');
         });
 
@@ -524,6 +497,8 @@ if ($n_stmt = $conn->prepare($notif_query)) {
                 }
             });
         });
-    </script>
-</body>
-</html>
+</script>
+<?php
+$extra_js = ob_get_clean();
+include 'includes/footer.php';
+?>

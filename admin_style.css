@@ -3,8 +3,8 @@
 
 body {
     font-family: 'Nunito', sans-serif;
-    background-color: #f8f9fc;
-    color: #5a5c69;
+    background-color: var(--dsms-bg);
+    color: var(--dsms-text);
 }
 
 .wrapper {
@@ -18,10 +18,8 @@ body {
     min-width: 250px;
     max-width: 250px;
     flex-shrink: 0;
-    background: #4e73df;
-    background: linear-gradient(180deg, #4e73df 10%, #224abe 100%);
-    color: #fff;
-    transition: all 0.3s;
+    background: var(--dsms-sidebar-bg, linear-gradient(180deg, #4e73df 10%, #224abe 100%));
+    transition: var(--theme-transition);
     min-height: 100vh;
 }
 
@@ -51,7 +49,7 @@ body {
     padding: 15px 20px;
     font-size: 0.9rem;
     display: block;
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--dsms-text) !important;
     text-decoration: none;
     font-weight: 600;
     transition: 0.2s;
@@ -64,9 +62,9 @@ body {
 }
 
 .sidebar ul li a:hover, .sidebar ul li.active > a {
-    color: #fff;
-    background: rgba(255, 255, 255, 0.15);
-    border-left: 4px solid #fff;
+    color: var(--dsms-primary);
+    background: rgba(128, 128, 128, 0.1);
+    border-left: 4px solid var(--dsms-primary);
 }
 
 .sidebar ul li a .badge {
@@ -150,31 +148,31 @@ body {
 
 .notification-item {
     padding: 12px 16px;
-    border-bottom: 1px solid #e3e6f0;
+    border-bottom: 1px solid var(--dsms-border);
     transition: background-color 0.2s ease;
     cursor: pointer;
     text-decoration: none;
     display: block;
-    color: #5a5c69;
+    color: var(--dsms-text);
 }
 
 .notification-item:hover {
-    background-color: #f8f9fc;
-    color: #333;
+    background-color: rgba(0, 0, 0, 0.05);
+    color: var(--dsms-heading);
 }
 
 .notification-item.unread {
-    background-color: #f0f4ff;
+    background-color: rgba(59, 130, 246, 0.08); /* light blue tint */
     font-weight: 600;
 }
 
 .notification-item.low-stock {
-    background-color: #fff5f5;
-    border-left: 4px solid #e74a3b !important;
+    background-color: rgba(239, 68, 68, 0.08); /* light red tint */
+    border-left: 4px solid var(--dsms-danger) !important;
 }
 
 .notification-item.low-stock:hover {
-    background-color: #ffeaea;
+    background-color: rgba(239, 68, 68, 0.15);
 }
 
 .notification-icon-box {

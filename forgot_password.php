@@ -239,6 +239,9 @@ if (isset($_POST['reset_password'])) {
             100% { transform: rotate(360deg); }
         }
     </style>
+    <!-- Theme System -->
+    <link rel="stylesheet" href="theme.css">
+    <script src="theme.js"></script>
 </head>
 <body>
 
